@@ -1,0 +1,143 @@
+{
+  "version": 6,
+  "entities": [
+    {
+      "entity": {
+        "type": "Project",
+        "description": "",
+        "id": "2ad03f12-fee1-4b5a-877f-5479b830e2d1",
+        "name": "BSF_hw"
+      },
+      "children": [
+        {
+          "entity": {
+            "type": "Service",
+            "id": "b94e14f6-361a-48e7-93f1-5270f7995bf3",
+            "name": "https://idigest.gtinternational.org/api"
+          },
+          "children": [
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+                  "name": "POST"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "displayName",
+                        "value": "displayName"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "loginId",
+                        "value": "jpan6889@gmail.com"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "loginIdType",
+                        "value": "1"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "password",
+                        "value": "password"
+                      }
+                    ]
+                  },
+                  "bodyType": "Form"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "secure": true,
+                    "name": "https",
+                    "version": "V11"
+                  },
+                  "host": "idigest.gtinternational.org",
+                  "path": "/api/user/create"
+                },
+                "description": "User",
+                "id": "a3692c32-2581-4104-95bd-bf64737dc82d",
+                "name": "user-create",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ]
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+                  "name": "POST"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "loginId",
+                        "value": "jpan6889@gmail.com"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "password",
+                        "value": "password"
+                      }
+                    ]
+                  },
+                  "bodyType": "Form"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "secure": true,
+                    "name": "https",
+                    "version": "V11"
+                  },
+                  "host": "idigest.gtinternational.org",
+                  "path": "/api/user/login"
+                },
+                "id": "7a45593d-b101-4de8-bb16-28ca8b611337",
+                "name": "user-login",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
