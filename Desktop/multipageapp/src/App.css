@@ -127,6 +127,21 @@ body {
   -ms-transform: translateY(-40%);
   transform: translateY(-200%);
 }
+.buttons4{
+  background-color: greenyellow;
+  padding: 0px;
+  border: none;
+  height: 40px;
+  width: 170px;
+  margin: 10px;
+  border-radius: 40px;
+  margin: 0;
+  position: absolute;
+  top: 35%;
+  left: 10%;
+  -ms-transform: translateY(-40%);
+  transform: translateY(-200%);
+}
 .nav {
   
   color: blue;

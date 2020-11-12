@@ -6,6 +6,8 @@ import PostAPI from "./PostAPI.js";
 import LoginPage from "./LoginPage.js";
 import ForgotPasswordPage from"./ForgotPasswordPage.js";
 import HomePage from "./HomePage.js";
+import GetContent from "./GetContent.js";
+import GodsLove from './GodsLove';
 
 class App extends Component {
   render() {
@@ -18,6 +20,7 @@ class App extends Component {
         <Link to="/signup"><button class="buttons1">SignUp</button></Link>
         <Link to="/login"><button class="buttons2">Login</button></Link>
         <Link to="/ForgotPasswordPage"><button class="buttons3">Forgot Password</button></Link>
+        <Link to="/GetContent"><button class="buttons4">GetContent</button></Link>
         </ul>
           <Route path="/" exact render= {
             ()=> {
@@ -37,6 +40,16 @@ class App extends Component {
           <Route path="/ForgotPasswordPage" exact render= {
             ()=> {
               return ( <ForgotPasswordPage/>);
+            }
+          }/>
+          <Route path="/GetContent" exact render= {
+            ()=> {
+              return ( <GetContent/> );
+            }
+          }/>
+          <Route path="/GodsLove" exact render= {
+            ()=> {
+              return ( <GodsLove/> );
             }
           }/>
       </div>
