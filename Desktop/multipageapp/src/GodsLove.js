@@ -11,7 +11,9 @@ class GodsLove extends Component {
   }
 
   state = {
-    persons: []
+    persons: [],
+    titles: []
+    
   }
 
   submitHandler = (e) => {
@@ -29,13 +31,34 @@ class GodsLove extends Component {
         console.log(response.data);
         console.log(response.data.title);
         const persons = response.data;
+        
+        
+        
+        
+        for (let i = 0; i < response.data.sessions.length; i++) {
+          
+            this.setState(prevState=> ({
+              titles: [...prevState.titles, response.data.sessions[i].title],
+            }))
+           
+            
+          
+          console.log(response.data.sessions[i])
+          
+          
+        }
         this.setState({persons});
+        //console.log(response.data.sessions[0]);
+        console.log(response.data.sessions[0]);
+        console.log(this.state.titles);
+        
       })
+      
       .catch((error) => {
         console.log(error);
       });
   };
-
+  
   render() {
     
     return (
@@ -48,6 +71,12 @@ class GodsLove extends Component {
           </h1>
           <h3>{this.state.persons.description}</h3>
           <h5>{this.state.persons.description}</h5>
+        
+          <h5>{this.state.titles.map(item => (
+            <li key = {item}>{item}</li>)
+          )}</h5>
+          
+          <h6>{this.state.titles[0]}</h6>
           <button className="buttonsw">Read</button>
           
         </form>
