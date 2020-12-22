@@ -1,0 +1,92 @@
+{
+ "OrganizationName": "APIcreated",
+ "GroupUserWeek": [
+  {
+   "GroupId": 20,
+   "UserId": 113,
+   "WeekOfYear": 26
+  },
+  {
+   "GroupId": 20,
+   "UserId": 2,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 20,
+   "UserId": 3,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 22,
+   "UserId": 2,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 22,
+   "UserId": 3,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 22,
+   "UserId": 4,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 22,
+   "UserId": 112,
+   "WeekOfYear": 4
+  },
+  {
+   "GroupId": 22,
+   "UserId": 112,
+   "WeekOfYear": 26
+  },
+  {
+   "GroupId": 22,
+   "UserId": 113,
+   "WeekOfYear": 26
+  },
+  {
+   "GroupId": 22,
+   "UserId": 114,
+   "WeekOfYear": 26
+  },
+  {
+   "GroupId": 22,
+   "UserId": 115,
+   "WeekOfYear": 26
+  }
+ ],
+ "GroupList": [
+  {
+   "GroupId": 20,
+   "GroupName": "01group"
+  },
+  {
+   "GroupId": 22,
+   "GroupName": "1group"
+  }
+ ],
+ "UserList": [
+  {
+   "UserId": 112,
+   "UserName": "mike"
+  },
+  {
+   "UserId": 112,
+   "UserName": "mike"
+  },
+  {
+   "UserId": 113,
+   "UserName": "t1"
+  },
+  {
+   "UserId": 114,
+   "UserName": "t2"
+  },
+  {
+   "UserId": 115,
+   "UserName": "t3"
+  }
+ ]
+}

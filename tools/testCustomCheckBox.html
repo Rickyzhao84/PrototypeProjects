@@ -1,0 +1,64 @@
+<html>
+
+<!--            margin: 8px;          margin-top: 10px;            margin: 0px;        margin-left: 10px;-->
+<!-- everything comes from: https://stackoverflow.com/questions/30663562/use-images-like-checkboxes -->
+
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <style>
+
+      input[type="checkbox"] {
+        display: none;
+      }
+      
+      label {
+        border: 1px solid #fff;
+        padding: 10px;
+        //display: block;
+        position: relative;
+        margin: 10px;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        
+        font-size:20px;
+        height:24px;
+        light-height:24px;
+      }
+      
+      .checkbox_wrapper {
+        height:35px;
+        line-height:35px;
+      }
+      
+    </style>
+    <script>
+    
+    const imgs = ['back.png', 'ok.png'];
+    function alternateImg() {
+      const idx = document.getElementById("test3").checked? 1 : 0;
+      document.getElementById("cimg").src = imgs[idx];
+    }
+
+    </script>
+</head>
+
+
+<body>
+  <h1>a test page to customized a checkbox's image </h1>
+  <div class="checkbox_wrapper">
+    <input type="checkbox" id="test3" onclick='alternateImg()'/>
+    <label for="test3"><img id="cimg" style="width:16; height:16" src="back.png"> test3</label>
+</div>
+
+
+  
+</body>
+
+</html>

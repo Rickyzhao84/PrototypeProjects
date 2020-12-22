@@ -1,0 +1,30 @@
+{
+  "theDate": "2020-07-26",
+  "mediumFontSize": 24,
+  "smallFontSize": 22,
+  "backImgUri": "",
+  "okImgUri": "",
+  "attendanceImgUri": "",
+  "checkImageUri": "http://idigest.gtinternational.org/preview/check.png",
+  "headerHeight": 40,
+  "memberAttendance": [
+      {
+          "userId": "111",
+          "name": "grace Grace  Grace  Grace  Grace  Grace  Grace  Grace",
+          "attended": 1,
+          "past10WeekCount": 2,
+          "accepted": true
+      },
+      {
+          "userId": "222",
+          "name": "John",
+          "attended": 0,
+          "accepted": true
+      },
+      {
+          "userId": "333",
+          "name": "Thomas",
+          "accepted": true
+      }
+    ]
+}

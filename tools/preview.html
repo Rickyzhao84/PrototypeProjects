@@ -1,0 +1,844 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <style>
+        body {
+            margin: 0px;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+            scrollbar-width: thin;
+            overflow-x: hidden;
+        }
+
+        textarea {
+            width: 100%;
+            overflow: hidden;
+            font-size: 18px;
+            font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+        }
+
+        .section {
+            margin: 8px;
+            font-size: 18px;
+            line-height: 1.85em;
+            margin-top: 10px;
+            max-width: 100%;
+            box-sizing: border-box;
+            width: calc(100% - 16px);
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-weight: bold;
+        }
+
+        .bibleref {
+            padding-left: 7px;
+            padding-right: 7px;
+            color: white;
+            background-color: black;
+            border-radius: 30px;
+            display: inline-block;
+            border: 2px solid white;
+        }
+
+        .selectGroup {
+            visibility: hidden;
+            text-align: center;
+            height: 40px;
+            margin-top: 25px;
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .selectGroupButton {
+            padding-left: 40px;
+            padding-right: 40px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            color: #202020;
+            background-color: #ECECEC;
+            border-radius: 32px;
+            display: inline-block;
+            font-size: 18px;
+            border: 2px solid #C0C0C0;
+        }
+
+        .link {
+            padding-left: 40px;
+            padding-right: 40px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            color: #202020;
+            background-color: #ECECEC;
+            border-radius: 32px;
+            display: inline-block;
+            font-size: 18px;
+            border: 2px solid #C0C0C0;
+        }
+
+        .answer {
+            color: #202020;
+            background-color: #ecf0f1;
+            overflow-y: hidden;
+            border-radius: 7px;
+            border: 1px solid #626262;
+            padding: 7px;
+        }
+
+        div.redDot {
+            position: absolute;
+            right: -2px;
+            top: -18px;
+            width: 8px;
+            height: 8px;
+            background-color: red;
+            border-radius: 1em;
+        }
+
+        img.backgroundImage {
+            height: 270;
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 0;
+            position: absolute;
+            visibility: hidden;
+            z-index: -1;
+        }
+
+        div.titleText {
+            height: 140;
+            background-color: transparent;
+            display: -webkit-box;
+            -webkit-box-pack: center;
+            -webkit-box-align: center;
+            display: box;
+            box-pack: center;
+            box-align: center;
+        }
+
+        div.bookTitle {
+            font-size: 20px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.lessonTitle {
+            margin-top: 0.5em;
+            font-size: 25px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.dayTitle {
+            margin-top: 0.5em;
+            font-size: 30px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #navbar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: -140px;
+            width: 100%;
+            z-index: 1;
+            transition: bottom 0.5s;
+            display: grid;
+            grid-template-columns: 33.33% 33.33% 33.33%;
+            background-color: #cdcdcd;
+            opacity: 0.8;
+            text-align: center;
+            padding: 10px 0 30px 0;
+        }
+
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            padding: 2px 0 0 0;
+            top: 0;
+            background-color: whitesmoke;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        a {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+    <script>
+        let showBottomNavbar = false;
+
+        if (
+            !window.ReactNativeWebView ||
+            !window.ReactNativeWebView.postMessage
+        ) {
+            window.ReactNativeWebView = {
+                postMessage: message => {
+                    console.log(message);
+                }
+            };
+        }
+
+        const bibleRef = { "创世记": 1, "出埃及记": 2, "利未记": 3, "民数记": 4, "申命记": 5, "约书亚记": 6, "士师记": 7, "路得记": 8, "撒母耳记上": 9, "撒母耳记下": 10, "列王纪上": 11, "列王纪下": 12, "历代志上": 13, "历代志下": 14, "以斯拉记": 15, "尼希米记": 16, "以斯帖记": 17, "约伯记": 18, "诗篇": 19, "箴言": 20, "传道书": 21, "雅歌": 22, "以赛亚书": 23, "耶利米书": 24, "耶利米哀歌": 25, "以西结书": 26, "但以理书": 27, "何西阿书": 28, "约珥书": 29, "阿摩司书": 30, "俄巴底亚书": 31, "约拿书": 32, "弥迦书": 33, "那鸿书": 34, "哈巴谷书": 35, "西番雅书": 36, "哈该书": 37, "撒迦利亚书": 38, "玛拉基书": 39, "马太福音": 40, "马可福音": 41, "路加福音": 42, "约翰福音": 43, "使徒行传": 44, "罗马书": 45, "哥林多前书": 46, "哥林多后书": 47, "加拉太书": 48, "以弗所书": 49, "腓立比书": 50, "歌罗西书": 51, "帖撒罗尼迦前书": 52, "帖撒罗尼迦后书": 53, "提摩太前书": 54, "提摩太后书": 55, "提多书": 56, "腓利门书": 57, "希伯来书": 58, "雅各书": 59, "彼得前书": 60, "彼得后书": 61, "约翰一书": 62, "约翰二书": 63, "约翰三书": 64, "犹大书": 65, "启示录": 66, "創世記": 1, "出埃及記": 2, "利未記": 3, "民數記": 4, "申命記": 5, "約書亞記": 6, "士師記": 7, "路得記": 8, "撒母耳記上": 9, "撒母耳記下": 10, "列王紀上": 11, "列王紀下": 12, "歷代志上": 13, "歷代志下": 14, "以斯拉記": 15, "尼希米記": 16, "以斯帖記": 17, "約伯記": 18, "詩篇": 19, "傳道書": 21, "以賽亞書": 23, "耶利米書": 24, "以西結書": 26, "但以理書": 27, "何西阿書": 28, "約珥書": 29, "阿摩司書": 30, "俄巴底亞書": 31, "約拿書": 32, "彌迦書": 33, "那鴻書": 34, "哈巴谷書": 35, "西番雅書": 36, "哈該書": 37, "撒迦利亞書": 38, "瑪拉基書": 39, "馬太福音": 40, "馬可福音": 41, "約翰福音": 43, "使徒行傳": 44, "羅馬書": 45, "哥林多前書": 46, "哥林多後書": 47, "加拉太書": 48, "以弗所書": 49, "腓立比書": 50, "歌羅西書": 51, "帖撒羅尼迦前書": 52, "帖撒羅尼迦後書": 53, "提摩太前書": 54, "提摩太後書": 55, "提多書": 56, "腓利門書": 57, "希伯來書": 58, "雅各書": 59, "彼得前書": 60, "彼得後書": 61, "約翰一書": 62, "約翰二書": 63, "約翰三書": 64, "猶大書": 65, "啟示錄": 66, Genesis: 1, Exodus: 2, Leviticus: 3, Numbers: 4, Deuteronomy: 5, Joshua: 6, Judges: 7, Ruth: 8, "1 Samuel": 9, "2 Samuel": 10, "1 Kings": 11, "2 Kings": 12, "1 Chronicles": 13, "2 Chronicles": 14, Ezra: 15, Nehemiah: 16, Esther: 17, Job: 18, Psalm: 19, Proverbs: 20, Ecclesiastes: 21, "Song of Songs": 22, Isaiah: 23, Jeremiah: 24, Lamentations: 25, Ezekiel: 26, Daniel: 27, Hosea: 28, Joel: 29, Amos: 30, Obadiah: 31, Jonah: 32, Micah: 33, Nahum: 34, Habakkuk: 35, Zephaniah: 36, Haggai: 37, Zechariah: 38, Malachi: 39, Matthew: 40, Mark: 41, Luke: 42, John: 43, Acts: 44, Romans: 45, "1 Corinthians": 46, "2 Corinthians": 47, Galatians: 48, Ephesians: 49, Philippians: 50, Colossians: 51, "1 Thessalonians": 52, "2 Thessalonians": 53, "1 Timothy": 54, "2 Timothy": 55, Titus: 56, Philemon: 57, Hebrews: 58, James: 59, "1 Peter": 60, "2 Peter": 61, "1 John": 62, "2 John": 63, "3 John": 64, Jude: 65, Revelation: 66 };
+
+        function splitString(text, chars) {
+            let result = [];
+            let current = null;
+            for (let i = 0; i < text.length; i++) {
+                if (chars.indexOf(text[i]) !== -1) {
+                    if (current !== null) {
+                        result.push(current);
+                        current = null;
+                    }
+                    result.push(text[i]);
+                } else {
+                    if (current === null) {
+                        current = text[i];
+                    } else {
+                        current += text[i];
+                    }
+                }
+            }
+
+            if (current !== null) {
+                result.push(current);
+            }
+
+            return result;
+        }
+
+        function getBibleRef(text) {
+            let bibleReferences = [];
+            for (let name in bibleRef) {
+                let startPos = 0;
+                // find book name
+                let pos = text.indexOf(name, startPos);
+                while (pos !== -1) {
+                    // find verse
+                    startPos = pos + name.length;
+                    let endPos = startPos;
+                    while (endPos < text.length && " \t\n0123456789:-".indexOf(text[endPos]) !== -1) {
+                        endPos++;
+                    }
+
+                    const verseText = text.substr(startPos, endPos - startPos);
+                    const arr = splitString(verseText, [":", "-"]);
+                    const chapter = parseInt(arr[0]);
+                    let found = false;
+                    if (chapter > 0) {
+                        if (arr.length === 1) {
+                            //chapter
+                            found = true;
+                        } else if (arr.length === 3 && arr[1] === "-") {
+                            //chapter-chapter
+                            found = true;
+                        } else if (arr.length === 3 && arr[1] === ":") {
+                            //chapter:verse
+                            found = true;
+                        } else if (arr.length === 5 && arr[1] === ":" && arr[3] === "-") {
+                            //chapter:verse
+                            found = true;
+                        } else if (
+                            arr.length === 7 &&
+                            arr[1] === ":" &&
+                            arr[3] === "-" &&
+                            arr[5] === ":"
+                        ) {
+                            //chapter:verse-chapter:verse
+                            found = true;
+                        }
+
+                        if (found) {
+                            bibleReferences.push({
+                                text: name + verseText,
+                                book: name,
+                                verse: verseText,
+                                start: pos,
+                                end: endPos
+                            });
+                        }
+                    }
+
+                    pos = text.indexOf(name, startPos);
+                }
+            }
+
+            bibleReferences.sort((a, b) => { return a.start <= b.start ? -1 : 1 });
+            if (bibleReferences.length === 0) {
+                return [{ type: "text", value: text }];
+            }
+
+            let result = [];
+            let start = 0;
+            for (let i in bibleReferences) {
+                const item = bibleReferences[i];
+                if (item.start !== start) {
+                    const value = text.substr(start, Math.max(0, item.start - start));
+                    if (value.length > 0) {
+                        result.push({ type: "text", value });
+                    }
+                }
+
+                result.push({ type: "bible", value: item.text, book: item.book, verse: item.verse });
+                start = item.end;
+            }
+
+            if (start < text.length) {
+                result.push({ type: "text", value: text.substr(start) });
+            }
+
+            return result;
+        }
+
+        function scrollTo(element, to, duration) {
+            var start = element.scrollTop,
+                change = to - start,
+                currentTime = 0,
+                increment = 5;
+
+            var animateScroll = function () {
+                currentTime += increment;
+                var val = Math.easeInOutQuad(currentTime, start, change, duration);
+                element.scrollTop = val;
+                if (currentTime < duration) {
+                    setTimeout(animateScroll, increment);
+                } else {
+                    element.scrollTop = 0;
+                }
+            };
+            animateScroll();
+        }
+
+        Math.easeInOutQuad = (t, b, c, d) => {
+            t /= d / 2;
+            if (t < 1) return (c / 2) * t * t + b;
+            t--;
+            return (-c / 2) * (t * (t - 2) - 1) + b;
+        };
+
+        function setBottomNavbar(show) {
+            stopPropagation();
+            showBottomNavbar = show;
+            document.getElementById("navbar").style.bottom = show ? "0" : "-140px";
+        }
+
+        function setPathActive(id, active) {
+            const ele = document.getElementById(id);
+            if (ele) {
+                ele.setAttribute("stroke", active ? "black" : "rgb(163,163,163)");
+                ele.setAttribute("fill", active ? "black" : "transparent");
+            }
+        }
+
+        function setTextActive(id, title, active) {
+            const ele = document.getElementById(id);
+            if (ele) {
+                ele.setAttribute("fill", active ? "rgb(255,255,255)" : "rgb(163,163,163)");
+                ele.setAttribute("font-size", active ? 24 : 20);
+                ele.setAttribute("font-weight", "bold");
+                ele.setAttribute("font-family", "arial");
+                ele.innerHTML = `${title}`;
+            }
+        }
+
+        function stopPropagation() {
+            if (event) {
+                event.stopPropagation();
+            }
+        }
+
+        function gotoDay(day, animation = 1) {
+            stopPropagation();
+
+            const sessionDays = getSessionLength();
+            if (day > sessionDays) {
+                return;
+            }
+
+            setBottomNavbar(false);
+
+            for (let i = 1; i <= sessionDays; i++) {
+                setPathActive("navbar_path_day" + i, day === i);
+                setTextActive("navbar_text_day" + i, content.lesson.sessions[i - 1].navbar || i, day === i);
+            }
+
+            currentSessionIndex = day - 1;
+            loadContent();
+
+            scrollTo(document.body, 0, animation ? 200 : 0);
+        }
+
+        function goBack() {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({ command: "goBack", day: currentSessionIndex + 1, scrollTop: document.body.scrollTop })
+            );
+        }
+
+        function openLink(value) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "openLink", value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function onAnswerChange(id, tx) {
+            content.answers[id] = tx.value;
+            tx.style.height = "auto";
+            tx.style.height = tx.scrollHeight + "px";
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "setAnswer", id, value: tx.value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function goToBible(book, verse) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "goToBible", book, verse,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function goToPage(value) {
+            stopPropagation();
+            setBottomNavbar(false);
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "goToPage", value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function selectGroup() {
+            stopPropagation();
+            setBottomNavbar(false);
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                command: "selectGroup",
+                day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+            }));
+        }
+
+        function goToChat(groupId, questionId) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "goToChat", groupId, questionId,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function resizeTextAreas() {
+            // initialize all textarea height (https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
+            var tx = document.getElementsByTagName("textarea");
+            for (var i = 0; i < tx.length; i++) {
+                tx[i].style.height = "auto";
+                tx[i].style.height = tx[i].scrollHeight + "px";
+            }
+        }
+
+        function onTextAreaBlur(tx) {
+            tx.style.color = "#202020";
+            tx.style.backgroundColor = "#ecf0f1";
+        }
+
+        function onTextAreaFocus(tx) {
+            tx.style.color = "#004cb0";
+            tx.style.backgroundColor = "white";
+        }
+
+        function getCurrentSession() {
+            return content.lesson.sessions[currentSessionIndex];
+        }
+
+        function getSessionLength() {
+            return content.lesson.sessions.length;
+        }
+
+        function createTextNode(textNode, text, className) {
+            const node = document.createElement(textNode);
+            node.setAttribute("class", className);
+            node.innerHTML = text;
+            return node;
+        }
+
+        function createInputNode(id, className) {
+            const textarea = document.createElement("textarea");
+            textarea.setAttribute("id", id);
+            textarea.setAttribute("class", className);
+            textarea.setAttribute("rows", 5);
+            textarea.setAttribute("oninput", "onAnswerChange('" + id + "', this)");
+            textarea.setAttribute("onfocus", "onTextAreaFocus(this)");
+            textarea.setAttribute("onblur", "onTextAreaBlur(this)");
+            textarea.value = content.answers[id] || "";
+            return textarea;
+        }
+
+        function createChatNode(group, id) {
+            const a = document.createElement("a");
+            a.setAttribute("style", "position: absolute; right: -7px; top: -22px;");
+            a.setAttribute("onclick", `goToChat(${group.groupId}, '${id}')`);
+            a.innerHTML = `<svg viewBox="0 0 58 58" style="width: 30px;"><g><path style="fill:#626262;" d="M44,18.394v21.141c0,2.722-2.207,4.929-4.929,4.929L22,44.535l-10,11v-11H4.929 C2.207,44.535,0,42.328,0,39.606l0-21.141c0-2.722,2.207-4.929,4.929-4.929l34.141-0.071C41.793,13.465,44,15.672,44,18.394z"/></g></svg>`;
+            return a;
+        }
+
+        function createLinkNode(linkNode, text, onClick, className) {
+            const node = document.createElement(linkNode);
+            node.setAttribute("class", className);
+            node.setAttribute("onclick", onClick);
+            node.innerHTML = text;
+            return node;
+        }
+
+        function createRedDotNode() {
+            const div = document.createElement("div");
+            div.setAttribute("class", 'redDot');
+            return div;
+        }
+
+        function createImageNode(src) {
+            const img = document.createElement("img");
+            img.src = src;
+            img.setAttribute("style", "width: 100%; box-shadow: 0 0 3px #333;");
+            return img;
+        }
+
+        function createAudioNode(src) {
+            const audio = document.createElement("audio");
+            audio.setAttribute("controls", "true");
+            audio.setAttribute("controlsList", "nodownload");
+            audio.setAttribute("style", "width: 100%;");
+
+            const audioSrc = document.createElement("source");
+            audioSrc.src = src;
+            audioSrc.type = "audio/mpeg";
+
+            audio.append(audioSrc);
+            return audio;
+        }
+
+        function createVideoNode(src) {
+            const video = document.createElement("video");
+            video.setAttribute("controls", "true");
+            video.setAttribute("style", "width: 100%;");
+
+            const videoSrc = document.createElement("source");
+            videoSrc.src = src;
+            videoSrc.type = "video/mp4";
+
+            video.append(videoSrc);
+            return video;
+        }
+
+        let currentSessionIndex = 0;
+        function loadContent() {
+            document.getElementById("bookName").innerHTML = content.book.title;
+            document.getElementById("lessonTitle").innerHTML = content.lesson.title;
+            if (content.lesson.background) {
+                const img = document.getElementById("titleImage");
+                img.src = content.lesson.background;
+                img.style.visibility = 'visible';
+            }
+
+            const session = getCurrentSession();
+            document.getElementById("dayTitle").innerHTML = session.title || '&nbsp;';
+            const contentNode = document.getElementById("content");
+            contentNode.innerHTML = '';
+            session.content.map(item => {
+                const p = document.createElement("p");
+                p.setAttribute("class", "section");
+                contentNode.appendChild(p);
+                switch (item.type) {
+                    case "title":
+                        p.appendChild(createTextNode("div", item.value, "title"));
+                        break;
+                    case "subTitle":
+                        p.appendChild(createTextNode("div", item.value, "subTitle"));
+                        break;
+                    case "text":
+                        {
+                            const result = getBibleRef(item.value);
+                            let textHtml = "";
+                            result.forEach(item => {
+                                switch (item.type) {
+                                    case "text":
+                                        p.appendChild(createTextNode("span", item.value, "text"));
+                                        break;
+                                    case "bible":
+                                        p.appendChild(createLinkNode("a", item.value, "goToBible('" + item.book + "', '" + item.verse + "')", "bibleref"));
+                                        break;
+                                }
+                            });
+                        }
+                        break;
+                    case "question":
+                        {
+                            const div = document.createElement("div");
+                            div.style.position = 'relative';
+                            div.appendChild(createInputNode(item.value, "answer"));
+
+                            p.appendChild(div);
+
+                            if (content.group) {
+                                div.appendChild(createChatNode(content.group, item.value));
+                                if (content.unreadChat.indexOf(item.value) !== -1) {
+                                    div.appendChild(createRedDotNode());
+                                }
+                            }
+                        }
+                        break;
+                    case "link":
+                        p.appendChild(createLinkNode("button", item.value, "openLink('" + item.url + "')", "link"));
+                        break;
+                    case "image":
+                        p.appendChild(createImageNode(item.value));
+                        break;
+                    case "audio":
+                        p.appendChild(createAudioNode(item.value));
+                        break;
+                    case "video":
+                        p.appendChild(createVideoNode(item.value));
+                        break;
+                    default:
+                        console.error(item);
+                        break;
+                }
+            });
+        }
+
+        function initImage(id, src) {
+            const img = document.getElementById(id);
+            img.src = content.images[src];
+            img.width = 32;
+            img.height = 32;
+        }
+
+        function getNavBarDay(day) {
+            let lastDayLink = "";
+            switch (day) {
+                case 2:
+                    lastDayLink = `<a id="linkDay2" href="#" onclick="gotoDay(2)">
+                    <path id="navbar_path_day2" d=" M 42, 3 L 74 3 A 17 17 0 0 1 74 37 L 42 37 L 52 20 L 42 3" />
+                    <text id="navbar_text_day2" x="61" y="27">2</text></a>`;
+                    break;
+                case 3:
+                    lastDayLink = `<a id="linkDay3" href="#" onclick="gotoDay(3)">
+                    <path id="navbar_path_day3" d=" M 79, 3 L 111 3 A 17 17 0 0 1 111 37 L 79 37 L 89 20 L 79 3" />
+                    <text id="navbar_text_day3" x="99" y="27">3</text></a>`;
+                    break;
+                case 4:
+                    lastDayLink = `<a id="linkDay4" href="#" onclick="gotoDay(4)">
+                    <path id="navbar_path_day4" d=" M 116, 3 L 148 3 A 17 17 0 0 1 148 37 L 116 37 L 126 20 L 116 3" />
+                    <text id="navbar_text_day4" x="132" y="27">4</text></a>`;
+                    break;
+                case 5:
+                    lastDayLink = `<a id="linkDay5" href="#" onclick="gotoDay(5)">
+                    <path id="navbar_path_day5" d=" M 154, 3 L 186 3 A 17 17 0 0 1 186 37 L 154 37 L 164 20 L 154 3" />
+                    <text id="navbar_text_day5" x="174" y="27">5</text></a>`;
+                    break;
+                case 6:
+                    lastDayLink = `<a id="linkDay6" href="#" onclick="gotoDay(6)">
+                    <path id="navbar_path_day6" d=" M 191, 3 L 223 3 A 17 17 0 0 1 223 37 L 191 37 L 201 20 L 191 3" />
+                    <text id="navbar_text_day6" x="210" y="27">6</text></a>`;
+                    break;
+                case 7:
+                    lastDayLink = `<a id="linkDay7" href="#" onclick="gotoDay(7)">
+                    <path id="navbar_path_day7" d=" M 228, 3 L 256 3 A 17 17 0 0 1 256 37 L 228 37 L 238 20 L 228 3" />
+                    <text id="navbar_text_day7" x="245" y="27">7</text></a>`;
+                    break;
+            }
+
+            const start = day < 2 ? 10 : (110 + (day - 2) * 40);
+            return `${lastDayLink}<a href="#" onclick="goBack()">
+                        <circle cx="${start + 10}" cy="20" r="18" stroke="rgb(0,0,0)" fill="transparent" stroke-width="1" />
+                        <line x1="${start}" y1="14" x2="${start + 20}" y2="14" style="stroke:rgb(0,0,0);stroke-width:4" />
+                        <line x1="${start}" y1="20" x2="${start + 20}" y2="20" style="stroke:rgb(0,0,0);stroke-width:4" />
+                        <line x1="${start}" y1="26" x2="${start + 20}" y2="26" style="stroke:rgb(0,0,0);stroke-width:4" />
+                    </a>`;
+        }
+
+        function initContent() {
+            const svg = document.getElementById(`topNavBarSvg`);
+            svg.innerHTML = `<a id="linkDay1" href="#" onclick="gotoDay(1)">
+                <path id="navbar_path_day1" d="M 18, 37 A 17 17 0 0 1 18 3 L 37 3 L 47 20 L 37 37 L 18 37" />
+                <text id="navbar_text_day1" x="19" y="27">1</text>
+            </a>
+
+            <a id="linkDay2" href="#" onclick="gotoDay(2)">
+                <path id="navbar_path_day2" d="M 42, 3 L 74 3 L 84 20 L 74 37 L 42 37 L 52 20 L 42 3" />
+                <text id="navbar_text_day2" x="59" y="27">2</text>
+            </a>
+
+            <a id="linkDay3" href="#" onclick="gotoDay(3)">
+                <path id="navbar_path_day3" d="M 79, 3 L 111 3 L 121 20 L 111 37 L 79 37 L 89 20 L 79 3" />
+                <text id="navbar_text_day3" x="95" y="27">3</text>
+            </a>
+
+            <a id="linkDay4" href="#" onclick="gotoDay(4)">
+                <path id="navbar_path_day4" d=" M 116, 3 L 149 3 L 159 20 L 149 37 L 116 37 L 126 20 L 116 3" />
+                <text id="navbar_text_day4" x="132" y="27">4</text>
+            </a>
+
+            <a id="linkDay5" href="#" onclick="gotoDay(5)">
+                <path id="navbar_path_day5" d=" M 154, 3 L 186 3 L 196 20 L 186 37 L 154 37 L 164 20 L 154 3" />
+                <text id="navbar_text_day5" x="169" y="28">5</text>
+            </a>
+
+            <a id="linkDay6" href="#" onclick="gotoDay(6)">
+                <path id="navbar_path_day6" d=" M 191, 3 L 223 3 L 233 20 L 223 37 L 191 37 L 201 20 L 191 3" />
+                <text id="navbar_text_day6" x="206" y="27">6</text>
+            </a>
+
+            <a id="linkDay7" href="#" onclick="gotoDay(7)">
+                <path id="navbar_path_day7" d=" M 228, 3 L 256 3 A 17 17 0 0 1 256 37 L 228 37 L 238 20 L 228 3" />
+                <text id="navbar_text_day7" x="245" y="27">7</text>
+            </a>`;
+
+            const sessionDays = getSessionLength();
+            if (sessionDays > 1) {
+                // remove after
+                for (let i = sessionDays; i <= 7; i++) {
+                    const ele = document.getElementById(`linkDay${i}`);
+                    if (ele) {
+                        ele.remove();
+                    }
+                }
+
+                // update last one
+                const prevDay = document.getElementById(`linkDay${sessionDays - 1}`);
+                prevDay.insertAdjacentHTML('afterend', getNavBarDay(sessionDays));
+
+                // update svg width
+                svg.style.width = 260 + 40 * (sessionDays - 5);
+            } else {
+                svg.innerHTML = getNavBarDay(0);
+                svg.style.width = 40;
+            }
+            svg.style.visibility = 'visible';
+
+            gotoDay(content.position.day, 0);
+
+            initImage('navbar_home', 'home');
+            initImage('navbar_group', 'group');
+            initImage('navbar_note', 'note');
+
+            if (content.group && Array.isArray(content.groups)) {
+                const groupSelect = document.getElementById("groupSelect");
+                groupSelect.innerHTML = `${content.group.name}${content.newGroupMessage ? ' 💬' : ''}`;
+                groupSelect.style.visibility = 'visible';
+            } else {
+                document.getElementById("selectGroupDiv").innerHTML = '';
+            }
+
+            setBottomNavbar(false);
+            resizeTextAreas();
+
+            document.body.scrollTop = content.position.scrollTop;
+        }
+
+        function onBodyClick() {
+            if (document.activeElement.className === "answer") {
+                setBottomNavbar(false);
+                return;
+            }
+
+            if (document.body === document.activeElement) {
+                document.activeElement.blur();
+                setBottomNavbar(!showBottomNavbar);
+            }
+        }
+    </script>
+</head>
+
+<body onclick="onBodyClick()">
+    <img id="titleImage" class="backgroundImage">
+
+    <div class="titleText">
+        <div>
+            <div id="bookName" class="bookTitle"></div>
+            <div id="lessonTitle" class="lessonTitle"></div>
+            <div id="dayTitle" class="dayTitle"></div>
+        </div>
+    </div>
+
+    <div id="selectGroupDiv" class="selectGroup">
+        <a id="groupSelect" class="selectGroupButton" onclick="goToPage('GroupChat')"></a>
+    </div>
+
+    <div id="topNavBar" class="sticky">
+        <svg id="topNavBarSvg" style="display: block; margin: auto; height: 40; padding: 5; visibility: hidden;">
+        </svg>
+    </div>
+
+    <div id="navbar">
+        <div onclick="goToPage('Home')">
+            <img id="navbar_home">
+        </div>
+        <div onclick="selectGroup()">
+            <img id="navbar_group">
+        </div>
+        <div onclick="goToPage('Note')">
+            <img id="navbar_note">
+        </div>
+    </div>
+
+    <div style="height: 20px"></div>
+    <div id="content"></div>
+    <div style="height: 100px"></div>
+</body>
+
+</html>
