@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import axios from "axios";
-
+import { BrowserRouter as Router, Link} from 'react-router-dom';
 class LoginPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      
+      persons: [],
+      titles: [],
+      lesson: [],
       loginId: "",
       
       password: "",
@@ -28,9 +30,21 @@ class LoginPage extends Component {
       })
       .then((response) => {
         console.log(response);
-      })
+        console.log(response.data.displayName);
+        const persons = <Link to="/GetContent"><button className="buttonsw" type="submit">Go to Profile</button></Link>;
+        const titles = "Hi! " + response.data.displayName;
+        
+        
+        
+        
+      console.log(this.state.titles);
+      this.setState({persons});
+    this.setState({titles});
+    })
       .catch((error) => {
+        const titles = "wrong password";
         console.log(error);
+        
       });
   };
 
@@ -68,7 +82,14 @@ class LoginPage extends Component {
           <button className="buttonsw" type="submit">
             Submit
           </button>
+          
         </form>
+        <h1>
+        {this.state.persons}
+        </h1>
+        <h1>
+        {this.state.titles}
+        </h1>
       </div>
     );
   }
