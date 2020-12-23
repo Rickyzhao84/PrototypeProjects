@@ -8,19 +8,19 @@ import ForgotPasswordPage from"./ForgotPasswordPage.js";
 import HomePage from "./HomePage.js";
 import GetContent from "./GetContent.js";
 import GodsLove from './GodsLove';
-
+import HomeScreen from './HomeScreen.js'
 class App extends Component {
   render() {
     return (
       <Router>
       <div className="App">
-        <h1 class="nav">NAV BAR</h1>
+        {/* <h1 class="nav">NAV BAR</h1> */}
         <ul>
         <Link to="/"><button class="buttons">Home</button></Link>
         <Link to="/signup"><button class="buttons1">SignUp</button></Link>
         <Link to="/login"><button class="buttons2">Login</button></Link>
         <Link to="/ForgotPasswordPage"><button class="buttons3">Forgot Password</button></Link>
-        <Link to="/GetContent"><button class="buttons4">GetContent</button></Link>
+        
         </ul>
           <Route path="/" exact render= {
             ()=> {
