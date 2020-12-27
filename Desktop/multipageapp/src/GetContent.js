@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './HomeScreen.css';
 
 import axios from 'axios';
+import RightColumn from "./RightColumn";
 
 class GetContent extends Component {
   constructor(props) {
@@ -18,6 +19,12 @@ class GetContent extends Component {
     titles: [],
     lesson: [],
     
+    /* Need way to load hw. */
+    hw: [
+      {text: "one"},
+      {text: "two"},
+      {text: "three"}
+    ]
   }
   
   submitHandler = (e) => {
@@ -132,12 +139,10 @@ class GetContent extends Component {
           <p id="answers1"></p>
         </form>
   </div>
-  <div class="class3">
-    <p>Homework</p>
-    <h5>1. Why is it difficult to define the love of God?</h5>
-    <textarea></textarea>
-    
-  </div>
+<div align="center"> {/* removed "class3" for now */} 
+  <RightColumn hw={this.state.hw}></RightColumn>
+     </div>
+
   
 </body>
 
@@ -147,7 +152,7 @@ class GetContent extends Component {
       
     );
   }
-}
+} 
 
   export default GetContent;
 
