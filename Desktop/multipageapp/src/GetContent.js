@@ -9,8 +9,7 @@ class GetContent extends Component {
     super(props);
     
     
-    
-    
+      
   }
   
   state = {
@@ -18,8 +17,9 @@ class GetContent extends Component {
     persons: [],
     titles: [],
     lesson: [],
+    
   }
-
+  
   submitHandler = (e) => {
     e.preventDefault();
     
@@ -57,6 +57,7 @@ class GetContent extends Component {
         console.log(response.data.sessions[0]);
         console.log(this.state.titles);
         console.log(response.data.sessions[0].lesson);
+        
       })
       
       .catch((error) => {
@@ -84,7 +85,8 @@ class GetContent extends Component {
         
         
         <body>
-  <div class="class1">
+        
+  <div class="class1 vertical" >
     <p>Books</p>
     <section>
             
@@ -96,22 +98,23 @@ class GetContent extends Component {
             <br/>
             <img className="photoss"src={"http://13.91.97.63/idigest/lesson/FollowMe/cover"} alt="God's Love"></img>
         </section>
+        
   </div>
-  <div class="class2">
+  <div class="class2 vertical">
     <p>Chapters</p>
     <form onSubmit={this.submitHandler}>
           
-          <h5>
+          <h4>
             {this.state.persons.title}
-          </h5>
+          </h4>
           
-          <h5>
+          <h4>
             {this.state.persons.description}
             
-          </h5>
+          </h4>
           {/* <h5>{this.state.persons.description}</h5> */}
         
-          <h5>{this.state.titles.map(item => (
+          <h5 class="left">{this.state.titles.map(item => (
             <a href="google.com"><li key = {item}>{item}</li></a>
             
             )
@@ -121,19 +124,27 @@ class GetContent extends Component {
             
             )
           )}</h5> */}
-          
-          <button className="buttonsw" >Read</button>
-          {!this.state.isHidden }
+          <div id="disappears">
+            
+          <button className="buttonsw">Read</button>
+
+          </div>
+          <p id="answers1"></p>
         </form>
   </div>
   <div class="class3">
     <p>Homework</p>
     <h5>1. Why is it difficult to define the love of God?</h5>
     <textarea></textarea>
+    
   </div>
   
 </body>
+
+  
+  
       </div>
+      
     );
   }
 }

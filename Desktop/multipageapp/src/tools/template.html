@@ -1,0 +1,751 @@
+
+<html>
+<header id="sandy"></header>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <style>
+        body {
+            margin: 0px;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+            scrollbar-width: thin;
+            overflow-x: hidden;
+            font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+        }
+
+        textarea {
+            width: 100%;
+            overflow: hidden;
+            font-size: 18px;
+        }
+
+        .section {
+            margin: 8px;
+            font-size: 18px;
+            line-height: 1.85em;
+            margin-top: 10px;
+            max-width: 100%;
+            box-sizing: border-box;
+            width: calc(100% - 16px);
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+        }
+
+        .title {
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .bibleref {
+            padding-left: 7px;
+            padding-right: 7px;
+            color: white;
+            background-color: black;
+            border-radius: 30px;
+            display: inline-block;
+            border: 2px solid white;
+        }
+
+        div.selectGroup {
+            position: absolute;
+            top: 158;
+            width: 100%;
+            visibility: hidden;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        div.groupText {
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .selectGroupButton {
+            visibility: visible;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            color: #202020;
+            background-color: #ececec;
+            border-radius: 32px;
+            display: inline-block;
+            font-size: 18px;
+            border: 2px solid #c0c0c0;
+            width: calc(100vw - 80px);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .link {
+            padding-left: 40px;
+            padding-right: 40px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            color: #202020;
+            background-color: #ECECEC;
+            border-radius: 32px;
+            display: inline-block;
+            font-size: 18px;
+            border: 2px solid #C0C0C0;
+        }
+
+        .answer {
+            color: #202020;
+            background-color: #ecf0f1;
+            overflow-y: hidden;
+            border-radius: 7px;
+            border: 1px solid #626262;
+            padding: 7px;
+        }
+
+        div.redDot {
+            position: absolute;
+            right: -2px;
+            top: -18px;
+            width: 8px;
+            height: 8px;
+            background-color: red;
+            border-radius: 1em;
+        }
+
+        img.backgroundImage {
+            height: 84;
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 0;
+            position: absolute;
+            visibility: hidden;
+            z-index: -1;
+        }
+
+        div.titleText {
+            height: 84;
+            background-color: transparent;
+            display: -webkit-box;
+            -webkit-box-pack: center;
+            -webkit-box-align: center;
+            display: box;
+            box-pack: center;
+            box-align: center;
+        }
+
+        div.bookTitle {
+            position: absolute;
+            top: 5;
+            font-size: 16px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.lessonTitle {
+            position: absolute;
+            top: 25;
+            margin-top: 0.2em;
+            font-size: 18px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.dayTitle {
+            position: absolute;
+            top: 50;
+            margin-top: 0.2em;
+            font-size: 20px;
+            width: calc(100vw);
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #navbar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: -140px;
+            width: 100%;
+            z-index: 1;
+            transition: bottom 0.5s;
+            display: grid;
+            grid-template-columns: 33.33% 33.33% 33.33%;
+            background-color: #cdcdcd;
+            opacity: 0.8;
+            text-align: center;
+            padding: 10px 0 30px 0;
+        }
+
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            padding: 2px 0 0 0;
+            top: 0;
+            background-color: whitesmoke;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        a {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+    <script type='module' >
+	    import {getBibleRef} from './bible.js';
+	    window.getBibleRef = getBibleRef;
+    </script>
+    <script>
+        let showBottomNavbar = false;
+
+        if (
+            !window.ReactNativeWebView ||
+            !window.ReactNativeWebView.postMessage
+        ) {
+            window.ReactNativeWebView = {
+                postMessage: message => {
+                    console.log(message);
+                }
+            };
+        }
+
+        function scrollTo(element, to, duration) {
+            var start = element.scrollTop,
+                change = to - start,
+                currentTime = 0,
+                increment = 5;
+
+            var animateScroll = function () {
+                currentTime += increment;
+                var val = Math.easeInOutQuad(currentTime, start, change, duration);
+                element.scrollTop = val;
+                if (currentTime < duration) {
+                    setTimeout(animateScroll, increment);
+                } else {
+                    element.scrollTop = 0;
+                }
+            };
+            animateScroll();
+        }
+
+        Math.easeInOutQuad = (t, b, c, d) => {
+            t /= d / 2;
+            if (t < 1) return (c / 2) * t * t + b;
+            t--;
+            return (-c / 2) * (t * (t - 2) - 1) + b;
+        };
+
+        function setPathActive(id, active) {
+            const ele = document.getElementById(id);
+            if (ele) {
+                ele.setAttribute("stroke", active ? "black" : "rgb(163,163,163)");
+                ele.setAttribute("fill", active ? "black" : "transparent");
+            }
+        }
+
+        function setTextActive(id, title, active) {
+            const ele = document.getElementById(id);
+            if (ele) {
+                ele.setAttribute("fill", active ? "rgb(255,255,255)" : "rgb(163,163,163)");
+                ele.setAttribute("font-size", active ? 24 : 20);
+                ele.setAttribute("font-weight", "bold");
+                ele.innerHTML = `${title}`;
+            }
+        }
+
+        function stopPropagation() {
+            if (event) {
+                event.stopPropagation();
+            }
+        }
+
+        function gotoDay(day, animation = 1) {
+            stopPropagation();
+
+            const sessionDays = getSessionLength();
+            console.log('gotoDay', day, sessionDays);
+            if (sessionDays && day > sessionDays) {
+                return;
+            }
+
+            for (let i = 1; i <= sessionDays; i++) {
+                setPathActive("navbar_path_day" + i, day === i);
+                setTextActive("navbar_text_day" + i, content.lesson.sessions[i - 1].navbar || i, day === i);
+            }
+
+            if (day > 0) {
+                currentSessionIndex = day - 1;
+            }
+
+            loadContent();
+
+            resizeTextAreas();
+
+            scrollTo(document.body, 0, animation ? 200 : 0);
+        }
+
+        function goBack() {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({ command: "goBack", day: currentSessionIndex + 1, scrollTop: document.body.scrollTop })
+            );
+        }
+
+        function openLink(value) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "openLink", value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function onAnswerChange(id, tx) {
+            content.answers[id] = tx.value;
+            tx.style.height = "auto";
+            tx.style.height = tx.scrollHeight + "px";
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "setAnswer", id, value: tx.value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function goToBible(book, verse) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "goToBible", book, verse,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function goToPage(value) {
+            stopPropagation();
+            setBottomNavbar(false);
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "goToPage", value,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function selectGroup() {
+            stopPropagation();
+            setBottomNavbar(false);
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+                command: "selectGroup",
+                day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+            }));
+        }
+
+        function shareAnswer(questionId) {
+            stopPropagation();
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    command: "shareAnswer", questionId,
+                    day: currentSessionIndex + 1, scrollTop: document.body.scrollTop
+                })
+            );
+        }
+
+        function resizeTextAreas() {
+            // initialize all textarea height (https://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize)
+            var tx = document.getElementsByTagName("textarea");
+            for (var i = 0; i < tx.length; i++) {
+                tx[i].style.height = "auto";
+                tx[i].style.height = tx[i].scrollHeight + "px";
+            }
+        }
+
+        function onTextAreaBlur(tx) {
+            tx.style.color = "#202020";
+            tx.style.backgroundColor = "#ecf0f1";
+        }
+
+        function onTextAreaFocus(tx) {
+            tx.style.color = "#004cb0";
+            tx.style.backgroundColor = "white";
+        }
+
+        function getCurrentSession() {
+            return content.lesson.sessions[currentSessionIndex];
+        }
+
+        function getSessionLength() {
+            if (!content.lesson.sessions) {
+                return 0;
+            }
+
+            return content.lesson.sessions.length;
+        }
+
+        function createTextNode(textNode, text, className) {
+            const node = document.createElement(textNode);
+            node.setAttribute("class", className);
+            node.innerHTML = text;
+            return node;
+        }
+
+        function createInputNode(id, className, rows, value) {
+            const textarea = document.createElement("textarea");
+            textarea.setAttribute("id", id);
+            textarea.setAttribute("class", className);
+            textarea.setAttribute("rows", rows);
+            textarea.setAttribute("oninput", "onAnswerChange('" + id + "', this)");
+            textarea.setAttribute("onfocus", "onTextAreaFocus(this)");
+            textarea.setAttribute("onblur", "onTextAreaBlur(this)");
+            textarea.value = value;
+            return textarea;
+        }
+
+        function createShareNode(group, id) {
+            const a = document.createElement("a");
+            a.setAttribute("style", "position: absolute; right: 0px; top: -25px;");
+            a.setAttribute("onclick", `shareAnswer('${id}')`);
+            a.innerHTML = `<img src="${content.images.more}" width="24" height="24">`;
+            return a;
+        }
+
+        function createLinkNode(linkNode, text, onClick, className) {
+            const node = document.createElement(linkNode);
+            node.setAttribute("class", className);
+            node.setAttribute("onclick", onClick);
+            node.innerHTML = text;
+            return node;
+        }
+
+        function createRedDotNode() {
+            const div = document.createElement("div");
+            div.setAttribute("class", 'redDot');
+            return div;
+        }
+
+        function createImageNode(src) {
+            const img = document.createElement("img");
+            img.src = src;
+            img.setAttribute("style", "width: 100%; box-shadow: 0 0 3px #333;");
+            return img;
+        }
+
+        function createAudioNode(src) {
+            const audio = document.createElement("audio");
+            audio.setAttribute("controls", "true");
+            audio.setAttribute("controlsList", "nodownload");
+            audio.setAttribute("style", "width: 100%;");
+
+            const audioSrc = document.createElement("source");
+            audioSrc.src = src;
+            audioSrc.type = "audio/mpeg";
+
+            audio.append(audioSrc);
+            return audio;
+        }
+
+        function createVideoNode(src) {
+            const video = document.createElement("video");
+            video.setAttribute("controls", "true");
+            video.setAttribute("style", "width: 100%;");
+
+            const videoSrc = document.createElement("source");
+            videoSrc.src = src;
+            videoSrc.type = "video/mp4";
+
+            video.append(videoSrc);
+            return video;
+        }
+
+        let currentSessionIndex = 0;
+        function loadContent() {
+            if (content.book && content.book.title)
+                document.getElementById("bookName").innerHTML = content.book.title;
+            else
+                document.getElementById("bookName").remove();
+
+            if (content.lesson.title)
+                document.getElementById("lessonTitle").innerHTML = content.lesson.title;
+            else
+                document.getElementById("lessonTitle").remove();
+            if (content.lesson.background) {
+                const img = document.getElementById("titleImage");
+                img.src = content.lesson.background;
+                img.style.visibility = 'visible';
+            }
+
+            const session = getCurrentSession();
+            if (session && session.title)
+                document.getElementById("dayTitle").innerHTML = session.title;
+            else if (getSessionLength() <= 1)
+                document.getElementById("dayTitle").remove();
+            else {
+                // can't remove, since one day has not title, but next day may have title!
+                document.getElementById("dayTitle").innerHTML = '&nbsp;';
+            }
+            const contentNode = document.getElementById("content");
+            contentNode.innerHTML = '';
+            const rows = 5;
+            session.content.map(item => {
+                const p = document.createElement("p");
+                p.setAttribute("class", "section");
+                contentNode.appendChild(p);
+                switch (item.type) {
+                    case "title":
+                        //p.appendChild(createTextNode("div", item.value, "title"));
+                        //break;
+                    case "subTitle":
+                        //p.appendChild(createTextNode("div", item.value, "subTitle"));
+                        //break;
+                    case "text":
+                        {
+                            const csstype = item.type;
+                            const result = getBibleRef(item.value);
+                            let textHtml = "";
+                            result.forEach(item => {
+                                switch (item.type) {
+                                    case "text":
+                                        p.appendChild(createTextNode("span", item.value, csstype));
+                                        break;
+                                    case "bible":
+                                        p.appendChild(createLinkNode("a", item.value, "goToBible('" + item.book + "', '" + item.verse + "')", "bibleref"));
+                                        break;
+                                }
+                            });
+                        }
+                        break;
+                    case "question":
+                        {
+                            const id = item.value;
+                            const value = ((content.answers) && content.answers[id]) || "";
+                            const div = document.createElement("div");
+                            div.style.position = 'relative';
+                            div.appendChild(createInputNode(id, "answer", rows, value));
+
+                            p.appendChild(div);
+
+                            if (content.group) {
+                                div.appendChild(createShareNode(content.group, id));
+                                if (content.unreadChat.indexOf(id) !== -1) {
+                                    div.appendChild(createRedDotNode());
+                                }
+                            }
+                        }
+                        break;
+                    case "link":
+                        p.appendChild(createLinkNode("button", item.value, "openLink('" + item.url + "')", "link"));
+                        break;
+                    case "image":
+                        p.appendChild(createImageNode(item.value));
+                        break;
+                    case "audio":
+                        p.appendChild(createAudioNode(item.value));
+                        break;
+                    case "video":
+                        p.appendChild(createVideoNode(item.value));
+                        break;
+                    case "bible":
+                        item.value.forEach(i => {
+                            console.log("rendering bible element: ", i);
+                            p.appendChild(createLinkNode("a",
+                                i.book + " " + i.verse,
+                                "goToBible('" + i.book + "', '" + i.verse + "')", "bibleref"));
+                        });
+                        break;
+                    default:
+                        console.error(item);
+                        break;
+                }
+            });
+        }
+
+        function initImage(id, src) {
+            const img = document.getElementById(id);
+            img.src = content.images[src];
+            img.width = 32;
+            img.height = 32;
+        }
+
+        function getNavBarDay(day) {
+            let lastDayLink = "";
+            switch (day) {
+                case 2:
+                    lastDayLink = `<a id="linkDay2" href="#" onclick="gotoDay(2)">
+                    <path id="navbar_path_day2" d=" M 42, 3 L 71 3 A 17 17 0 0 1 71 37 L 42 37 L 52 20 L 42 3" />
+                    <text id="navbar_text_day2" x="61" y="27">2</text></a>`;
+                    break;
+                case 3:
+                    lastDayLink = `<a id="linkDay3" href="#" onclick="gotoDay(3)">
+                    <path id="navbar_path_day3" d=" M 79, 3 L 108 3 A 17 17 0 0 1 108 37 L 79 37 L 89 20 L 79 3" />
+                    <text id="navbar_text_day3" x="99" y="27">3</text></a>`;
+                    break;
+                case 4:
+                    lastDayLink = `<a id="linkDay4" href="#" onclick="gotoDay(4)">
+                    <path id="navbar_path_day4" d=" M 116, 3 L 145 3 A 17 17 0 0 1 145 37 L 116 37 L 126 20 L 116 3" />
+                    <text id="navbar_text_day4" x="132" y="27">4</text></a>`;
+                    break;
+                case 5:
+                    lastDayLink = `<a id="linkDay5" href="#" onclick="gotoDay(5)">
+                    <path id="navbar_path_day5" d=" M 154, 3 L 182 3 A 17 17 0 0 1 182 37 L 154 37 L 164 20 L 154 3" />
+                    <text id="navbar_text_day5" x="174" y="27">5</text></a>`;
+                    break;
+                case 6:
+                    lastDayLink = `<a id="linkDay6" href="#" onclick="gotoDay(6)">
+                    <path id="navbar_path_day6" d=" M 191, 3 L 219 3 A 17 17 0 0 1 219 37 L 191 37 L 201 20 L 191 3" />
+                    <text id="navbar_text_day6" x="210" y="27">6</text></a>`;
+                    break;
+                case 7:
+                    lastDayLink = `<a id="linkDay7" href="#" onclick="gotoDay(7)">
+                    <path id="navbar_path_day7" d=" M 228, 3 L 256 3 A 17 17 0 0 1 256 37 L 228 37 L 238 20 L 228 3" />
+                    <text id="navbar_text_day7" x="245" y="27">7</text></a>`;
+                    break;
+            }
+
+            const start = day < 2 ? 10 : (100 + (day - 2) * 37);
+            return `${lastDayLink}<a href="#" onclick="goBack()">
+                        <circle cx="${start + 10}" cy="20" r="18" stroke="rgb(0,0,0)" fill="transparent" stroke-width="1" />
+                        <line x1="${start}" y1="14" x2="${start + 20}" y2="14" style="stroke:rgb(0,0,0);stroke-width:4" />
+                        <line x1="${start}" y1="20" x2="${start + 20}" y2="20" style="stroke:rgb(0,0,0);stroke-width:4" />
+                        <line x1="${start}" y1="26" x2="${start + 20}" y2="26" style="stroke:rgb(0,0,0);stroke-width:4" />
+                    </a>`;
+        }
+
+        function initSvg(svg) {
+            svg.innerHTML = `<a id="linkDay1" href="#" onclick="gotoDay(1)">
+                <path id="navbar_path_day1" d="M 18, 37 A 17 17 0 0 1 18 3 L 37 3 L 47 20 L 37 37 L 18 37" />
+                <text id="navbar_text_day1" x="19" y="27">1</text>
+            </a>
+
+            <a id="linkDay2" href="#" onclick="gotoDay(2)">
+                <path id="navbar_path_day2" d="M 42, 3 L 74 3 L 84 20 L 74 37 L 42 37 L 52 20 L 42 3" />
+                <text id="navbar_text_day2" x="59" y="27">2</text>
+            </a>
+
+            <a id="linkDay3" href="#" onclick="gotoDay(3)">
+                <path id="navbar_path_day3" d="M 79, 3 L 111 3 L 121 20 L 111 37 L 79 37 L 89 20 L 79 3" />
+                <text id="navbar_text_day3" x="95" y="27">3</text>
+            </a>
+
+            <a id="linkDay4" href="#" onclick="gotoDay(4)">
+                <path id="navbar_path_day4" d=" M 116, 3 L 149 3 L 159 20 L 149 37 L 116 37 L 126 20 L 116 3" />
+                <text id="navbar_text_day4" x="132" y="27">4</text>
+            </a>
+
+            <a id="linkDay5" href="#" onclick="gotoDay(5)">
+                <path id="navbar_path_day5" d=" M 154, 3 L 186 3 L 196 20 L 186 37 L 154 37 L 164 20 L 154 3" />
+                <text id="navbar_text_day5" x="169" y="28">5</text>
+            </a>
+
+            <a id="linkDay6" href="#" onclick="gotoDay(6)">
+                <path id="navbar_path_day6" d=" M 191, 3 L 223 3 L 233 20 L 223 37 L 191 37 L 201 20 L 191 3" />
+                <text id="navbar_text_day6" x="206" y="27">6</text>
+            </a>
+
+            <a id="linkDay7" href="#" onclick="gotoDay(7)">
+                <path id="navbar_path_day7" d=" M 228, 3 L 256 3 A 17 17 0 0 1 256 37 L 228 37 L 238 20 L 228 3" />
+                <text id="navbar_text_day7" x="245" y="27">7</text>
+            </a>`;
+
+            const sessionDays = getSessionLength();
+            if (sessionDays > 1) {
+                for (let i = sessionDays; i <= 7; i++) {
+                    const ele = document.getElementById(`linkDay${i}`);
+                    if (ele) {
+                        ele.remove();
+                    }
+                }
+
+                const prevDay = document.getElementById(`linkDay${sessionDays - 1}`);
+                prevDay.insertAdjacentHTML('afterend', getNavBarDay(sessionDays));
+                svg.style.width = 260 + 40 * (sessionDays - 5);
+            } else {
+                svg.innerHTML = getNavBarDay(0);
+                svg.style.width = 40;
+            }
+            svg.style.visibility = 'visible';
+        }
+
+        function initContent() {
+            const svg = document.getElementById(`topNavBarSvg`);
+            if (svg)
+                initSvg(svg);
+
+            gotoDay(content.position ? content.position.day : 0, 0);
+
+            //initImage('navbar_home', 'home');
+            //initImage('navbar_group', 'group');
+            //initImage('navbar_note', 'note');
+
+            document.body.scrollTop = content.position.scrollTop;
+        }
+
+        function onBodyClick() {
+            if (document.activeElement.className === "answer") {
+                setBottomNavbar(false);
+                return;
+            }
+
+            if (document.body === document.activeElement) {
+                document.activeElement.blur();
+                setBottomNavbar(!showBottomNavbar);
+            }
+        }
+    </script>
+</head>
+
+<body onclick="onBodyClick()">
+    <img id="titleImage" class="backgroundImage">
+
+    <div class="titleText">
+        <div id="bookName" class="bookTitle"></div>
+        <div id="lessonTitle" class="lessonTitle"></div>
+        <div id="dayTitle" class="dayTitle"></div>
+    </div>
+
+    <div id="topNavBar" class="sticky">
+        <svg id="topNavBarSvg" style="display: block; margin: auto; height: 40; padding: 5; visibility: hidden;">
+        </svg>
+    </div>
+
+    <div id="content" style="margin-bottom: 100px;"></div>
+</body>
+
+</html>

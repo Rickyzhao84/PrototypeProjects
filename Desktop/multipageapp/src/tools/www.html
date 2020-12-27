@@ -1,0 +1,298 @@
+<html>
+
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <style>
+
+            #header
+            {
+                color: black;
+            }
+
+            body {
+                -webkit-hyphens: auto;
+                -ms-hyphens: auto;
+                hyphens: auto;
+                scrollbar-width: thin;
+                overflow-x: hidden;
+                margin-left: 3px;
+            }
+
+            .date
+            {
+                color: #888888;
+                font-weight: bold;
+                font-size: 100.vw;
+            }
+
+            .buttons {
+                vertical-align:middle;
+                line-height: 0.9;
+                
+                width: 68px;
+                margin-top: 6px;
+                border-radius: 12px;
+                max-width:68px;
+
+                height: 60px;
+                max-height:60px;
+
+                margin-left:1.5px;
+                padding-top: 0;
+                padding-bottom: 0;
+                background-color:white;
+
+                /*border-width:1px;*/
+
+                padding-left: 0;
+                padding-right: 0;
+                /*
+
+                //border:dotted;
+                //text-align: left;
+                //display: flex; /// didn't work todo:
+                //try this to see if it moves the text to left a bit more on dates
+                */
+            }
+
+            .buttonImage {
+                width: 32;
+                height: 32;
+            }
+
+            .AddImage {
+                width: 32;
+                height: 22;
+            }
+
+            /* width */
+            ::-webkit-scrollbar {
+                width: 7px;
+            }
+
+            /* Track */
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+            img.backgroundImage {
+                height: 270;
+                width: 100%;
+                left: 0;
+                right: 0;
+                top: 0;
+                position: absolute;
+                visibility: hidden;
+                z-index: -1;
+            }
+
+            div.sticky {
+                position: -webkit-sticky;
+                position: sticky;
+                padding: 2px 0 0 0;
+                top: 0;
+                background-color: whitesmoke;
+                font-size: 20px;
+                z-index: 10;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            a {
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+
+            /*#idTitle
+            {
+            background-color: #f0b242;
+            color: white;
+            }*/
+        </style>
+        <script>
+            if (
+                !window.ReactNativeWebView ||
+                !window.ReactNativeWebView.postMessage
+            ) {
+                window.ReactNativeWebView = {
+                    postMessage: message => {
+                        alert(message);
+                    }
+                };
+            }
+
+            function stopPropagation() {
+                if (event) {
+                    event.stopPropagation();
+                }
+            }
+
+            function goBack() {
+                stopPropagation();
+                window.ReactNativeWebView.postMessage(
+                    JSON.stringify({ command: "goBack" })
+                );
+            }
+
+            function bonclick() {
+                stopPropagation();
+                if (event.currentTarget.className === "buttons") {
+                    const idx = parseInt(event.currentTarget.id);
+                    stopPropagation();
+                    window.ReactNativeWebView.postMessage(
+                        JSON.stringify({
+                            command: "goToDate",
+                            idx
+                        })
+                    );
+                    return;
+                }
+            }
+
+
+            function initImage(src, id) {
+                if (content[src]) {
+                    const img = document.getElementById(id);
+                    img.src = content[src];
+                    img.style.visibility = 'visible';
+                }
+            }
+
+            function createButtonNode(id, text, className) {
+                const buttonNode = document.createElement("button");
+                buttonNode.setAttribute("id", id);
+                buttonNode.setAttribute("class", className);
+                buttonNode.innerHTML = text;
+                buttonNode.onclick = bonclick;
+                return buttonNode;
+            }
+
+
+            function initContent() {
+                initImage("backImgUri", "idBack");
+
+                const titleHtml = document.getElementById("idTitle");
+                titleHtml.innerHTML = content.title;
+
+                const buttonBlock = document.getElementById("idButtonBlock");
+                buttonBlock.innerHTML = "";
+
+                //let txt = '<font size="-5"> 11/25/2020 </font> <br/><font size="+1">100%</font>';
+
+                const NNN = content.completionDates.length;
+                const txt = `+`;
+                            /*
+                            `<b><font size="+10">
+                            +
+                            </font></b>`;
+                            */
+                            //<br/>
+                /* an attempt to replace + chracter w/ a image
+                const txt = `<div><font size="-5">&nbsp;</font><br/>
+                    <div style="float:middle" >
+                      <img class="AddImage"
+                      src=${content.backImgUri}> </div> </div>`;
+                */
+                const buttonNode = createButtonNode(NNN, txt, "buttons");
+                buttonNode.style.fontSize = "44px";
+                buttonNode.style.fontWeight=700;
+
+                buttonBlock.appendChild(buttonNode);
+                
+                let iii=0;
+                for (iii=0; iii<NNN; iii++)  {
+                    /*
+                    const txt = `<b><font size="-2"><span class="date">
+                    ${content.completionDates[iii].theDate.substr(0,10)}
+                                </span><br/>
+                    ${Math.round(100*content.completionDates[iii].count/content.groupSize)}
+                    %</font></b>`;*/ //<br/>
+                    const jsonDate = content.completionDates[iii].theDate.substr(0,10);
+                    const jsonPercent = Math.round(100*content.completionDates[iii].count/content.groupSize);
+                    const txt = `<font size="-5"> <span class="date">${jsonDate}</span>
+                                </font> <font size="+1"><b>${jsonPercent}%</b></font>`;
+                    //const txt = `<font size="+10"><b>${jsonPercent}%</b></font>`;
+                    const buttonNode = createButtonNode(iii, txt, "buttons");
+                    buttonBlock.appendChild(buttonNode);
+                }
+                for (let jj=1; jj<=4; jj++) {
+                  // add 4 invisible disabled buttons for alignment
+                  const buttonNode = createButtonNode(iii+jj, "&nbsp;", "buttons");
+                  buttonNode.style.borderWidth = 0;
+                  buttonNode.setAttribute("disabled", true);
+                  buttonBlock.appendChild(buttonNode);
+                }
+            }
+
+            function onBodyClick() {
+                /* // this does not work with safari ---
+            if (document.activeElement.className === "buttons") {
+              const idx = parseInt(document.activeElement.id);
+              //alert(idx);
+
+              stopPropagation();
+              window.ReactNativeWebView.postMessage(
+                  JSON.stringify({
+                      command: "goToDate",
+                      idx
+                  })
+              );
+              return;
+            }
+          */
+            }
+        </script>
+      </head>
+
+    <body onclick="onBodyClick()">
+        <img id="titleImage" class="backgroundImage"/>
+
+        <div id="header"  style="flexDirection:'row'; border-bottom: 1px solid; background-color: white;" >
+            <div style="float:left" >
+                <img id='idBack' onclick="goBack()" class='buttonImage'  style="Margin-left: 7px;" src='back.png'/>
+            </div>
+            <div id="idTitle" style="width: 100%; font-size:28; text-align: center;" >
+                Attendance
+            </div>
+        </div>
+        <div id="idButtonBlock"
+          style='flex-wrap: wrap; display: flex; margin-top:10px; justify-content: space-evenly;'>
+            <button class='buttons' style='font-size:60px; font-weight:700' name='id1' value='date'>+</button>
+            <button class='buttons' id='0'><font size="-5"> <span class="date">11/25/2020</span> </font> <br/><font size="+1"><b>100%</b></font></button>
+            <button class='buttons' id='1'><font size="-5"> <span class="date">12/5/2020 </span></font> <font size="+1"><b>66%</b></font></button>
+            <button class='buttons' id='2'><font size="-5"><span class="date"> 6/25/2020</span> </font> <font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"> <span class="date">2020/2/28</span> </font> <font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"> <span class="date">2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"> <span class="date">2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"> <span class="date">2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' name='id1' value='date'><font size="-5"><span class="date"> 2020/2/28</span> </font> <br/><font size="+1"><b>66%</b></font></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+            <button class='buttons' style="border-width:0px;" disabled name='id1' value='date'></button>
+        </div>
+    </body>
+
+</html>

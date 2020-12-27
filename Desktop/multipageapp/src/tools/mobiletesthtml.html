@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco-editor/min/vs/editor/editor.main.css">
+    <style>
+        /* The device with borders */
+        .smartphone {
+            position: relative;
+            width: 360px;
+            height: 640px;
+            margin: auto;
+            border: 16px black solid;
+            border-top-width: 60px;
+            border-bottom-width: 60px;
+            border-radius: 36px;
+        }
+
+        /* The horizontal line on the top of the device */
+        .smartphone:before {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 5px;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            border-radius: 10px;
+        }
+
+        /* The circle on the bottom of the device */
+        .smartphone:after {
+            content: '';
+            display: block;
+            width: 35px;
+            height: 35px;
+            position: absolute;
+            left: 50%;
+            bottom: -65px;
+            transform: translate(-50%, -50%);
+            background: #333;
+            border-radius: 50%;
+        }
+
+        /* The screen (or content) of the device */
+        .smartphone .content {
+            width: 360px;
+            height: 640px;
+            background: white;
+        }
+
+        .float-container {
+            border: 3px solid #fff;
+            padding: 20px;
+        }
+
+        .float-left {
+            width: 400px;
+            float: left;
+            /* border: 1px solid red; */
+        }
+
+        .float-right {
+            width: 500px;
+            float: left;
+            /* border: 1px solid red; */
+        }
+
+        .jsonEditor {
+            width: calc(100vw - 470px);
+            height: 750px;
+            font-size: 18px;
+            font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+            border: 1px solid grey
+        }
+    </style>
+</head>
+
+<body>
+    <p>You can test any html file by putting on query parameters with
+        ?filename=$(filename). Please make sure $(filename).html exists,
+        and test-$(filename).json exist to feed into $(filename).html.
+        In addition, $(filename).html should be driven by content variable
+        that will contain the json, and initContent() within $(fileanme).html
+        will be invoked.
+    </p>
+<script>
+    let filename = 'template';
+    const idx = window.location.href.indexOf('?filename=');
+    if (idx !== -1)
+        filename = window.location.href.substr(idx+10);
+    let srcHtmlFile = filename + ".html";
+    let jsonFile = "test-" + filename + ".json";
+    
+        var content = "";
+
+    var editor= null;
+    var previewFrame = null;
+
+
+    function format() {
+        editor?.getAction('editor.action.formatDocument').run();
+    }
+
+    function uploadLoad() {
+      const contentJson = editor.getValue();
+      console.log(JSON.parse(contentJson));
+
+      try {
+       previewFrame = window.frames['preview'];
+       previewFrame.content = JSON.parse(contentJson);
+        previewFrame.initContent();
+      } catch (error) {
+          document.getElementById("contentStatus").innerHTML = `<font color='red'>${error.message}</font>`
+      }
+    }
+
+
+    function loadJson() {
+        if (previewFrame === null)
+          return;
+        const href = ""+previewFrame.location;
+        if (href.indexOf(srcHtmlFile) === -1)
+          return;
+        
+        document.getElementById('idpreview').onload = uploadLoad;
+
+        //wait 100 miliseconds for the iframes to load??
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+            // Typical action to be performed when the document is ready:
+            //  debugger;
+                //content = JSON.parse(xhttp.responseText);
+                content = xhttp.responseText;
+                editor = monaco.editor.create(document.getElementById('container'), {
+                    value: content,
+                    language: 'json',
+                    wordWrap: 'on',
+                    automaticLayout: true
+                });
+
+                editor.getModel().updateOptions({ tabSize: 1 });
+            
+                editor.onDidChangeModelContent(e => {
+                    updateContent();
+                });
+
+                //alert(previewFrame.readyState);
+                previewFrame.content = JSON.parse(xhttp.responseText); // content;
+                previewFrame.initContent();
+            }
+        };
+        xhttp.open("GET", jsonFile, true);
+        xhttp.send();
+        format();
+    }
+    
+</script>
+    <div class="float-container">
+        <div class="float-left">
+            <div class="smartphone">
+                <div class="content">
+                    <iframe id="idpreview" name="preview" src="about:blank"
+                        style="width:100%;border:none;height:100%">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="float-right">
+            <div style="padding: 5pt">
+                <button onclick="format()">Format JSON</button>
+            </div>
+            <div id="container" class="jsonEditor"></div>
+
+            <div id="contentStatus"></div>
+        </div>
+    </div>
+</body>
+<script>
+    previewFrame = window.frames['preview'];
+    document.getElementById('idpreview').onload = loadJson;
+    //previewFrame.src = srcHtmlFile;
+    //what we got is a window object. has no src attribute.
+    //we could go with document.getElementById('preview').src = srcHtmlFile;
+    //document.querySelector("iframe").addEventListener( "load", loadJson);
+
+    previewFrame.location = srcHtmlFile;
+    
+    //document.getElementById('preview').src = srcHtmlFile;
+</script>
+<script>var require = { paths: { 'vs': 'monaco-editor/min/vs' } };</script>
+<script src="monaco-editor/min/vs/loader.js"></script>
+<script src="monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+<script src="monaco-editor/min/vs/editor/editor.main.js"></script>
+<script>
+
+    function updateContent() {
+        //debugger;
+        try {
+            document.getElementById('idpreview').src = srcHtmlFile;
+            //previewFrame.content = JSON.parse(contentJson);
+            //previewFrame.initContent();
+        } catch (error) {
+            document.getElementById("contentStatus").innerHTML = `<font color='red'>${error.message}</font>`
+        }
+    }
+</script>

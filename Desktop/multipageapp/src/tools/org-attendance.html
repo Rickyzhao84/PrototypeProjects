@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style></style>
+<!--
+(0) input is: {
+      OrganizationName:
+      GroupUserWeek:  [{GroupId, UserId, WeekOfYear}]
+      GroupList: [{GroupId, GroupName}]
+      UserList: [{UserId, UserName}]
+      }
+(1) i need a structure like, sort by groupId, do we add a type column for children's group? *later*
+  [
+    {
+      groupId: {
+        name:
+        userId: [week#1, week#3]
+      }
+    }
+  ]
+  1.1 first we can loop over the GroupList to create
+    groupAttendance[grouplist[iii].GroupId].name = grouplist[iii].GroupName;
+  1.2 and then loop over GroupUserWeek
+    groupAttendance[GroupUserWeek[iii].GroupId][GroupUserWeek[iii].UserId].push(GroupUserWeek[iii].WeekOfYear);
+  1.3 produce #2: gWeeks[GroupUserWeek[iii].WeekOfYear] = 1; *** later sort it. is it sort it already?
+      assuming user->weekofyear is already sorted on the server side...
+(2) we need an all up array of gWeeks: [week#1, week#2, ...] for the whole org
+(3) for each group, we draw the heading based on #2
+      and then for each user, we loop over gWeeks, while also scanning over userId's week away, and draw 0 and 1
+(4) we compute a OrgAttendance with the array sequence of gWeeks
+    so that each 1 in #3, increment by 1
+(5) we can then finally draw the summary attendance
+!-->
+    <script>
+      let gAttend = {};
+      let oAttend = {}; // {week#, count}
+      let userNames = {};
+      
+      function createTable() {
+        /*
+        <table>
+            <tr>
+              <td>Cell A</td>
+              <td>Cell B</td>
+            </tr>
+            <tr>
+              <td>Cell C</td>
+              <td>Cell D</td>
+            </tr>
+          </table>
+        */
+        const masterTableDiv = document.getElementById('master');
+        let masterTable = document.createElement('table');
+        
+        let iii;
+        // we need to get oAttend's keys, and sort based on week#
+        let weeks = [];
+        Object.keys(oAttend).forEach( (item) => {
+          weeks.push ( parseInt(item ));
+        });
+        weeks.sort( (a,b)=> { return a < b} );
+
+        let tr = document.createElement('tr');
+        let td = document.createElement('td');
+        td.innerHTML = '<b>Heading<b>';
+        tr.appendChild(td);
+        for (iii=0; iii<weeks.length; iii++) {
+          td = document.createElement('td');
+          td.innerHTML = '<b>W' + weeks[iii] + '</b>';
+          tr.appendChild(td);
+        }
+        masterTable.appendChild(tr);
+
+        tr = document.createElement('tr');
+        td = document.createElement('td');
+        td.innerHTML = '<b>Org-Total</b>';
+        tr.appendChild(td);
+        for (iii=0; iii<weeks.length; iii++) {
+          td = document.createElement('td');
+          td.innerHTML = oAttend[weeks[iii]];
+          tr.appendChild(td);
+        }
+        masterTable.appendChild(tr);
+        
+        debugger;
+        let jjj;
+        for (jjj=0; jjj<content.GroupList.length; jjj++) {
+          if (!gAttend[content.GroupList[jjj].GroupId]) {
+            //skip groups that has no attendance record
+            continue;
+          }
+          //1. get the group total row first
+          tr = document.createElement('tr');
+          td = document.createElement('td');
+          td.innerHTML = '<b>' + content.GroupList[jjj].GroupName + " total</b>";
+          tr.appendChild(td);
+          for (iii=0; iii<weeks.length; iii++) {
+            td = document.createElement('td');
+            if (gAttend[content.GroupList[jjj].GroupId].total[weeks[iii]])
+              td.innerHTML = gAttend[content.GroupList[jjj].GroupId].total[weeks[iii]];
+            else
+              td.innerHTML = "0";
+            tr.appendChild(td);
+          }
+          masterTable.appendChild(tr);
+          
+          //2. construct a row for each user in the group
+          // we need to get userIds, and sort
+          let users = [];
+          Object.keys(gAttend[content.GroupList[jjj].GroupId]).forEach( (item) => {
+            if (item === 'total')
+              return;
+            else
+              users.push ( parseInt(item ));
+          });
+          users.sort( (a,b)=> { return a < b} );
+          
+          // loop over each user as a row
+          for (let nnn=0; nnn<users.length; nnn++) {
+            tr = document.createElement('tr');
+            td = document.createElement('td');
+            
+            // retrieve the user's name, for now just the userID
+            if (userNames[users[nnn]])
+              td.innerHTML = userNames[users[nnn]];
+            else
+              td.innerHTML = 'User' + users[nnn];
+            tr.appendChild(td);
+            
+            let www = 0;
+            let wlen = gAttend[content.GroupList[jjj].GroupId][users[nnn]].length;
+            for (iii=0; iii<weeks.length; iii++) {
+              if (www === wlen || weeks[iii] < gAttend[content.GroupList[jjj].GroupId][users[nnn]][www]) {
+                td = document.createElement('td');
+                td.innerHTML = "0";
+                tr.appendChild(td);
+                continue;
+              }
+              else {
+                while (www < wlen && weeks[iii] > gAttend[content.GroupList[jjj].GroupId][users[nnn]][www]) {
+                  td = document.createElement('td');
+                  td.innerHTML = "0";
+                  tr.appendChild(td);
+                  www++;
+                }
+                if (www === wlen)
+                  continue;
+              }
+              td = document.createElement('td');
+              td.innerHTML = "√";
+              tr.appendChild(td);
+              www++;
+            }
+            masterTable.appendChild(tr);
+          }
+          //let kkk;
+          //now loop over each user as a row.
+          //for (kkk=0; kkk<10 ; kkk++) {
+            
+          //}
+          //td = document.createElement('td');
+          //td.innerHTML = oAttend[weeks[iii]];
+          //tr.appendChild(td);
+          masterTable.appendChild(tr);
+        }
+        //td.innerHTML = 'Total';
+        //tr.appendChild(td);
+        //masterTable.appendChild(tr);
+        masterTableDiv.appendChild(masterTable);
+      }
+      function initContent() {
+        // assuming the GroupList and GroupUserWeek are both sorted on the GroupId
+        console.log("initContent", JSON.stringify(content));
+        
+        const headerTitle = document.getElementById('header');
+        headerTitle.innerHTML = content.OrganizationName + " 出席表 for the past 30 sessions";
+        const guwcnt = content.GroupUserWeek?.length;
+        if (!guwcnt) {
+          //There is zero attendance;
+          //TODO: display simple message and bear out
+          const masterTableDiv = document.getElementById('master');
+          masterTableDiv.innerHTML = "There is no attendance record yet";
+          return;
+        }
+        const gcnt = content.GroupList?.length;
+        if (!gcnt) {
+          const masterTableDiv = document.getElementById('master');
+          masterTableDiv.innerHTML = "There is no groups in your org yet";
+          return;
+        }
+        let jjj=0;
+        for (let iii=0; iii<gcnt && jjj<guwcnt; iii++) {
+          if (content.GroupList[iii].GroupId < content.GroupUserWeek[jjj].GroupId) {
+            //this is a situation that an org's group has no attendance record at all.
+            //This could be because it's a brand new group
+            continue;
+          }
+          else if (content.GroupList[iii].GroupId > content.GroupUserWeek[jjj].GroupId) {
+            // this is the situation that a group is deleted from the org list, but attendance
+            // records remain behind, we'll skip these attendance records
+            while (jjj < guwcnt && content.GroupList[iii].GroupId > content.GroupUserWeek[jjj].GroupId)
+              jjj++;
+            if (jjj === guwcnt)
+              break;
+            if (content.GroupList[iii].GroupId < content.GroupUserWeek[jjj].GroupId)
+              continue;
+          }
+          gAttend[content.GroupList[iii].GroupId] = {};
+          gAttend[content.GroupList[iii].GroupId].total = {};
+          //gAttend[content.GroupList[iii].GroupId].name = content.GroupUserWeek[jjj].GroupName;
+          while (jjj<guwcnt && content.GroupList[iii].GroupId === content.GroupUserWeek[jjj].GroupId){
+            const userId = content.GroupUserWeek[jjj].UserId;
+            gAttend[content.GroupList[iii].GroupId][userId] = [];
+            //for every user
+            while (jjj<guwcnt && content.GroupUserWeek[jjj].UserId == userId) {
+              gAttend[content.GroupList[iii].GroupId][content.GroupUserWeek[jjj].UserId]
+                  .push(content.GroupUserWeek[jjj].WeekOfYear);
+              
+              if (gAttend[content.GroupList[iii].GroupId].total[content.GroupUserWeek[jjj].WeekOfYear])
+                gAttend[content.GroupList[iii].GroupId].total[content.GroupUserWeek[jjj].WeekOfYear] += 1;
+              else
+                gAttend[content.GroupList[iii].GroupId].total[content.GroupUserWeek[jjj].WeekOfYear] = 1;
+ 
+              if (oAttend[content.GroupUserWeek[jjj].WeekOfYear])
+                oAttend[content.GroupUserWeek[jjj].WeekOfYear] += 1;
+              else
+                oAttend[content.GroupUserWeek[jjj].WeekOfYear] = 1;
+              jjj++;
+            }
+          }
+        }
+        content.UserList.forEach( (item) => {
+          userNames[item.UserId] = item.UserName;
+        });
+        console.log("init content: gAttend: ", JSON.stringify(gAttend));
+        console.log("init content: oAttend: ", JSON.stringify(oAttend));
+        console.log("init content: oAttend: ", JSON.stringify(userNames));
+        createTable();
+        return;
+        
+        let tableList = JSON.stringify(content.GroupList);
+        let uniqueGroupList = []; // leave global to calculate standard number of columns
+        let numTables = content.GroupList.length;
+        let iterate = Array.from({ length: numTables }, (v, k) => k);
+        let attendance = content.GroupUserWeek;
+        let attSortGroup = attendance.sort((a, b) => b.GroupId.localeCompare(a.GroupId));
+        let attSortWeek = attendance.sort((a, b) => Number(a.WeekOfYear) - Number(b.WeekOfYear));
+
+  
+        function uniqueGroup() {
+          for (i = 0; i < attendance.length; i++) {
+            if (!uniqueGroupList.includes(attendance[i].GroupId)) {
+              uniqueGroupList.push(attendance[i].GroupId);
+            }
+          }
+        }
+        uniqueGroup();
+
+        function createCountForMaster(group, week) {
+          // sorted order, changed i to p to fix stack call
+          let count = 0;
+          for (p = 0; p < attSortGroup.length; p++) {
+            if (attSortGroup[p].GroupId == group && attSortGroup[p].WeekOfYear == week) {
+              count++;
+            }
+          }
+          return count;
+        }
+
+        function tableColumnHeaders(number) {
+          let tr = document.createElement('tr');
+          tr.appendChild(document.createTextNode('null'));
+          for (n = 0; n <= number; n++) {
+            let td = document.createElement('td');
+            td.appendChild(document.createTextNode('#' + n + ''));
+            tr.appendChild(td);
+          }
+          return tr;
+        }
+
+        // creating tables using GroupList
+        /*
+        function createTableSet() {
+          let tableDiv = document.getElementById('tables');
+          tableDiv.innerHTML = ''; //removes any existing data
+          let table = document.createElement('table');
+
+          function createTable(n) {
+            let tableName = document.createElement('tableName');
+            tableName.id = 'table-title';
+            let tableBody = document.createElement('tbody');
+            let numRow = content.GroupList[n].rows.length;
+            let numCol = content.GroupList[n].rows[0].length;
+            let br = document.createElement('br');
+
+            table.appendChild(br);
+            table.appendChild(tableName);
+            table.appendChild(tableBody);
+            tableName.innerHTML = content.GroupList[n].GroupName;
+
+            for (i = 0; i < numRow; i++) {
+              let tr = document.createElement('tr');
+              tableBody.appendChild(tr);
+              for (j = 0; j < numCol; j++) {
+                let td = document.createElement('td');
+                td.appendChild(document.createTextNode(content.GroupList[n].rows[i][j])); // test values ('Cell ' + i + ',' + j)
+                tr.appendChild(td);
+              }
+            }
+            tableDiv.appendChild(table);
+          }
+          iterate.forEach(createTable);
+        }
+*/
+        let totalRows = uniqueGroupList.length;
+        masterTableDiv.innerHTML = '';
+        let masterTable = document.createElement('masterTable');
+        let len = attendance.length;
+        let uniqueCol = Number(attSortWeek[len - 1].WeekOfYear); // finds last week of the year in data
+        let totalCol = uniqueCol + 1;
+        let tableName = document.createElement('tableName');
+        tableName.id = 'masterTableTitle';
+        let tableBody = document.createElement('tbody');
+        let br = document.createElement('br');
+
+        // in charge of top level attendance
+        function masterAttendanceTable() {
+          masterTable.appendChild(tableName);
+          masterTable.appendChild(br);
+          masterTable.appendChild(tableBody);
+          tableName.innerHTML = ''; //fill in
+
+          tableBody.appendChild(tableColumnHeaders(uniqueCol));
+
+          constructMasterData();
+
+          masterTableDiv.appendChild(masterTable);
+        }
+
+        // content
+        function constructMasterData() {
+          for (i = 0; i < totalRows; i++) {
+            let tr = document.createElement('tr');
+            let groupName = uniqueGroupList[i];
+            tr.appendChild(document.createTextNode(groupName));
+            tableBody.appendChild(tr);
+            for (j = 0; j < totalCol; j++) {
+              let td = document.createElement('td');
+              td.appendChild(document.createTextNode(createCountForMaster(groupName, j))); // dummy values ('Cell ' + i + ',' + j) (createCountForMaster(groupName, j)
+              //td.appendChild(document.createTextNode(insertData()));       // (createCountForMaster(groupName, j)
+              tr.appendChild(td);
+            }
+          }
+        }
+
+        masterAttendanceTable();
+
+        // function constructGroupData(group) {
+        //   for (i = 0; i < totalRows; i++) {
+        //     let tr = document.createElement('tr');
+        //     let groupName = uniqueGroupList[i];
+        //     tr.appendChild(document.createTextNode(groupName));
+        //     tableBody.appendChild(tr);
+        //     for (j = 0; j < totalCol; j++) {
+        //       let td = document.createElement('td');
+        //       td.appendChild(document.createTextNode(createCountForMaster(null, groupName, j))); // dummy values ('Cell ' + i + ',' + j) (createCountForMaster(groupName, j)
+        //       //td.appendChild(document.createTextNode(insertData()));       // (createCountForMaster(groupName, j)
+        //       tr.appendChild(td);
+        //     }
+        //   }
+        // }
+
+        function createCountForGroups(user, week) {
+          let count = 0;
+          for (p = 0; p < groupData.length; p++) {
+            if (groupData[p].UserId == user && groupData[p].WeekOfYear == week) {
+              count++;
+            }
+          }
+          return count;
+        }
+
+        //returns list of objects with given name
+        function filterByGroupName(GroupId) {
+          groupData = attendance.filter((e) => GroupId == e.GroupId);
+          groupData.sort((a, b) => Number(a.UserId) - Number(b.UserId));
+          return groupData;
+        }
+
+        let groupTableDiv = document.getElementById('groups');
+
+        // fix break between each groupTable
+        function groupTables() {
+          //uniqueGroupList.forEach();
+          groupTableDiv.innerHTML = '';
+
+          function constructGroupData(GroupId) {
+            let br = document.createElement('br');
+            let groupTable = document.createElement('groupTable');
+            let groupTableName = document.createElement('groupName');
+            groupTableName.id = 'groupTableTitle';
+            let groupTableBody = document.createElement('groupBody');
+            groupTableBody.appendChild(tableColumnHeaders(uniqueCol));
+            groupTableDiv.appendChild(groupTable);
+            groupTable.appendChild(groupTableName);
+            groupTable.appendChild(br);
+            groupTable.appendChild(groupTableBody);
+            groupTableName.innerHTML = ''; //fill in
+            groupTableName.innerHTML = GroupId;
+
+            let groupData = [];
+            groupData = filterByGroupName(GroupId);
+            let uniqueUserList = [];
+
+            function uniqueUsersInGroup() {
+              for (i = 0; i < groupData.length; i++) {
+                if (!uniqueUserList.includes(groupData[i].UserId)) {
+                  uniqueUserList.push(groupData[i].UserId);
+                }
+              }
+            }
+            uniqueUsersInGroup(); //updates unique users
+
+            // constructs table data
+            for (i = 0; i < uniqueUserList.length; i++) {
+              let tr = document.createElement('tr');
+              let userName = uniqueUserList[i];
+              tr.appendChild(document.createTextNode(userName));
+              groupTableBody.appendChild(tr);
+              for (j = 0; j < totalCol; j++) {
+                let td = document.createElement('td');
+                td.appendChild(document.createTextNode(createCountForGroups(userName, j)));
+                tr.appendChild(td);
+              }
+            }
+          }
+          // iterates over every group
+          uniqueGroupList.forEach((item) => {
+            constructGroupData(item);
+          });
+        }
+
+        groupTables();
+      }
+
+      // function createCountByWeek(week) {
+      //   // sorted order
+      //   let 成人小组 = 0;
+      //   let 卫星小组 = 0;
+      //   let seniorLevel = 0;
+      //   let level_3 = 0;
+      //   let level_1 = 0;
+      //   for (i = 0; i < attSortGroup.length; i++) {
+      //     if (attSortGroup[i].GroupId == '成人小组' && attSortGroup[i].WeekOfYear == week) {
+      //       成人小组++;
+      //     } else if (attSortGroup[i].GroupId == '卫星小组' && attSortGroup[i].WeekOfYear == week) {
+      //       卫星小组++;
+      //     } else if (attSortGroup[i].GroupId == '儿童 Senior Level' && attSortGroup[i].WeekOfYear == week) {
+      //       seniorLevel++;
+      //     } else if (attSortGroup[i].GroupId == '儿童 Level 3' && attSortGroup[i].WeekOfYear == week) {
+      //       level_3++;
+      //     } else {
+      //       level_1++;
+      //     }
+      //   }
+      //   let 成人小组卫星小组 = 成人小组 + 卫星小组;
+      // }
+    </script>
+  </head>
+
+  <body>
+    <h3 id="header"></h3>
+    <div id="master"></div>
+    <br />
+    <div id="groups"></div>
+    <div id="tables"></div>
+  </body>
+</html>
