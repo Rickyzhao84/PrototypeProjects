@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import './HomeScreen.css';
 
 import axios from 'axios';
+import RightColumn from "./RightColumn";
+import { data } from './data';
+
 
 class GetContent extends Component {
   constructor(props, pic) {
@@ -28,6 +31,13 @@ class GetContent extends Component {
     parenting: [],
     Chen: [],
 
+    
+    /* Need way to load hw. */
+    hw: [
+      {text: "one"},
+      {text: "two"},
+      {text: "three"}
+    ]
   }
   componentDidMount(){
 
@@ -108,6 +118,11 @@ class GetContent extends Component {
         },
       })
       .then((response) => {
+        console.log(response);
+        console.log(response.data);
+        console.log(response.data.title);
+        console.log("HI");
+        const persons = response.data;
         
         const GodsLove = response.data;
         
@@ -265,12 +280,10 @@ class GetContent extends Component {
            */}
         </form>
   </div>
-  <div class="class3">
-    <p>Homework</p>
-    <h5>1. Why is it difficult to define the love of God?</h5>
-    <textarea></textarea>
-    
-  </div>
+<div align="center"> {/* removed "class3" for now */} 
+  <RightColumn hw={data.answers}></RightColumn>
+     </div>
+
   
 </body>
 
@@ -280,7 +293,65 @@ class GetContent extends Component {
       
     );
   }
-}
+} 
 
   export default GetContent;
 
+
+/*
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          item: [],
+          isLoaded: false
+        };
+      }
+    
+      componentDidMount() {
+        fetch('https://jsonplaceholder.typicode.com/users')
+          .then(res => res.json())
+          .then(json => {
+            this.setState({
+              isLoaded: true,
+              items: json,
+            })
+          });
+      }
+    /*
+      submitHandler = (e) => {
+        e.preventDefault();
+        console.log(this.state);
+        axios
+          .get("https://idigest.gtinternational.org/api/lesson/parenting?/content/*")
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      };
+    
+    *//*
+      render() {
+        var { isLoaded, items } = this.state;
+        if(!isLoaded) {
+          return <div>Loading!!</div>;
+        } else {
+        return (
+          <div>
+            <ul>
+              {items.map(item => (
+                <li key={item.id}>
+                  Name: {item.name} | Email: {item.email}
+                </li>
+              ))};
+            </ul>
+          </div>
+        );
+      }
+    }
+    }
+    
+export default GetContent;
+*/
