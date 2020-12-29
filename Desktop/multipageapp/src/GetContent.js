@@ -4,6 +4,8 @@ import './HomeScreen.css';
 
 import axios from 'axios';
 import RightColumn from "./RightColumn";
+import { data } from './data';
+
 
 class GetContent extends Component {
   constructor(props) {
@@ -41,6 +43,7 @@ class GetContent extends Component {
         console.log(response);
         console.log(response.data);
         console.log(response.data.title);
+        console.log("HI");
         const persons = response.data;
         
         
@@ -140,7 +143,7 @@ class GetContent extends Component {
         </form>
   </div>
 <div align="center"> {/* removed "class3" for now */} 
-  <RightColumn hw={this.state.hw}></RightColumn>
+  <RightColumn hw={data.answers}></RightColumn>
      </div>
 
   
@@ -194,7 +197,6 @@ class GetContent extends Component {
     *//*
       render() {
         var { isLoaded, items } = this.state;
-
         if(!isLoaded) {
           return <div>Loading!!</div>;
         } else {
@@ -214,5 +216,4 @@ class GetContent extends Component {
     }
     
 export default GetContent;
-
 */
