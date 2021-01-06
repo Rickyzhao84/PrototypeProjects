@@ -19,10 +19,11 @@
     
   }
   .class3 {
-    width: 166.33%;
+    width: 33.33%;
     float: right;
     height: 100px;
-    position:absolute;
+    margin-top: -320px;
+    
   }
   .class2 {
     text-align: left;
