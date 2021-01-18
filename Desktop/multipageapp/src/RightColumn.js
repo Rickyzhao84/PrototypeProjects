@@ -15,7 +15,7 @@ class RightColumn extends Component {
                             <textarea></textarea>
                         </div>))
                     }
-
+                <iframe src="tools/template.html" height="2000px"></iframe>
                 </div>
             </React.Fragment>
         );

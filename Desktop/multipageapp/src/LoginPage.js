@@ -3,7 +3,7 @@ import axios from "axios";
 import { BrowserRouter as Router, Link} from 'react-router-dom';
 import Route from 'react-router-dom/Route';
 import HomeScreen from './HomeScreen.js'
-
+import './HomeScreen.css';
 class LoginPage extends Component {
   constructor(props) {
     super(props);

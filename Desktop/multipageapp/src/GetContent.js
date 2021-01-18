@@ -26,10 +26,9 @@ class GetContent extends Component {
     pictures: [],
     name: [],
     bookname: [],
+    description: [],
 
-
-    parenting: [],
-    Chen: [],
+  
 
     BookTitle: [],
     /* Need way to load hw. */
@@ -88,15 +87,18 @@ submitHandler = (e) => {
 
             .then((response) => {
               this.setState({titles: []});
+              this.setState({description: []});
               const BookTitle = response.data.title;
-              console.log(BookTitle);
-              this.setState({BookTitle});
-              console.log(response.data.sessions);
               
+              this.setState({BookTitle});
+              
+              const description = response.data.description;
+              this.setState({description});
               for (let i = 0; i < response.data.sessions.length; i++) {
                
                   this.setState(prevState=> ({
                     titles: [...prevState.titles, response.data.sessions[i].title],
+                    
                     lesson: [...prevState.lesson, response.data.sessions[i].lesson],
                   }))
                  
@@ -125,51 +127,6 @@ submitHandler = (e) => {
         console.log(error);
       });
 
-
-
-
-
-
-    // axios
-    //   .get("https://idigest.gtinternational.org/api/lesson/GodsLove", {
-    //     headers: {
-    //       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjY1NywibG9naW5JZCI6InBuZXVtb25pY2NvbWFAZ21haWwuY29tIiwiaWF0IjoxNjAzOTk4NjQwLCJleHAiOjE2MzU1MzQ2NDB9.rRXy4J5D5Rw9K2lTDTjd4VZ3hLEaBEU1BPNNND1HOys",
-    //       "Content-type": "application/json",
-    //     },
-    //   })
-    //   .then((response) => {
-    //     console.log(response);
-    //     console.log(response.data);
-    //     console.log(response.data.title);
-    //     const GodsLove = response.data;
-        
-        
-        
-        
-    //     for (let i = 0; i < response.data.sessions.length; i++) {
-          
-    //         this.setState(prevState=> ({
-    //           titles: [...prevState.titles, response.data.sessions[i].title],
-    //           lesson: [...prevState.lesson, response.data.sessions[i].lesson],
-    //         }))
-           
-            
-          
-    //       console.log(response.data.sessions[i])
-          
-          
-    //     }
-    //     this.setState({GodsLove});
-    //     //console.log(response.data.sessions[0]);
-    //     console.log(response.data.sessions[0]);
-    //     console.log(this.state.titles);
-    //     console.log(response.data.sessions[0].lesson);
-        
-    //   })
-      
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
     };
 
 
@@ -222,7 +179,7 @@ submitHandler = (e) => {
         
         
         <h1>IDigest</h1>
-        <img src="https://play-lh.googleusercontent.com/-DscnIMy5CY4pda2kulLTxfdPTRBRpYWK0OznZtEU6sYwaFkMWnco3udlX2JmrXidA0=s180" width="80px" height= "80px" ></img>
+        <img src="https://image.winudf.com/v2/image1/b3JnLmd0aW50ZXJuYXRpb25hbC5pZGlnZXN0X2ljb25fMTU5MDMwNDAwM18wNDA/icon.png?w=170&fakeurl=1" width="80px" height= "80px" ></img>
         <h3>Welcome! Rickyzhao84</h3>
         
         
@@ -247,30 +204,9 @@ submitHandler = (e) => {
     <p>Chapters</p>
     <form onSubmit={this.submitHandler}>
           
-          {/* <h4>
-            {this.state.GodsLove.title}
-          </h4>
           
-          <h4>
-            {this.state.GodsLove.description}
-            
-          </h4> */}
-          {/* <h5>{this.state.name.map(
-              item => (
-                <li key={item}>{item}</li>
-              )
-            )}</h5> */}
-          
-        
-          {/* <h5 class="left">{this.state.titles.map(item => (
-            
-            <a href="google.com"><li key = {item}>{item}</li></a>
-          
-            )
-          )}</h5> */}
-          
-          {/* <h5 class = "left">{this.state.name.keys((array) => <li>{array}</li>)}</h5> */}
-          <h4 class = "left">{this.state.BookTitle}</h4>
+          <h3 class = "left">{this.state.BookTitle}</h3>
+          <h4 class = "left">{this.state.description}</h4>
           <h5 class = "left">{this.state.titles.map(
             (item, index) =><li key={index}>{item}</li>)}</h5>
           
@@ -278,6 +214,7 @@ submitHandler = (e) => {
   </div>
 <div class="class3"> {/* removed "class3" for now */} 
   <RightColumn hw={data.answers}></RightColumn>
+  <iframe src="tools/template.html" height="2000px"></iframe>
      </div>
 
   
